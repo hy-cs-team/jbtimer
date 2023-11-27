@@ -2,19 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics_item.dart';
 
 class Statistics extends StatelessWidget {
-  const Statistics({super.key});
+  final bool showTotalCount;
+
+  const Statistics({
+    super.key,
+    this.showTotalCount = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 8.0),
-        Center(
-          child: Text(
-            '0 records',
-            style: Theme.of(context).textTheme.titleLarge,
+        if (showTotalCount) ...[
+          const SizedBox(height: 8.0),
+          Center(
+            child: Text(
+              '0 records',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
-        ),
+        ],
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: GridView(

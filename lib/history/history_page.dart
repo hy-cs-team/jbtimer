@@ -6,10 +6,19 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Total 0 records'),
+        centerTitle: true,
+      ),
+      body: const Column(
         children: [
-          Statistics(),
+          Statistics(showTotalCount: false),
+          Divider(
+            thickness: 1.0,
+            indent: 12.0,
+            endIndent: 12.0,
+          ),
         ],
       ),
     );
