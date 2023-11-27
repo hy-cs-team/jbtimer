@@ -3,9 +3,23 @@ import 'package:jbtimer/components/statistics.dart';
 import 'package:jbtimer/history/history_page.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/record_area.dart';
+import 'package:jbtimer/main/session_controller.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final SessionController _sessionController = SessionController();
+
+  @override
+  void dispose() {
+    _sessionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +29,25 @@ class MainPage extends StatelessWidget {
         child: Column(
           children: [
             JBComponent(
-              child: const Statistics(),
+              child: Statistics(
+                sessionController: _sessionController,
+              ),
               onPressed: () {
-                print('pressed');
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const HistoryPage(),
-                ));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => HistoryPage(
+                      sessionController: _sessionController,
+                    ),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 8.0),
-            const Expanded(child: RecordArea()),
+            Expanded(
+              child: RecordArea(
+                sessionController: _sessionController,
+              ),
+            ),
           ],
         ),
       ),
