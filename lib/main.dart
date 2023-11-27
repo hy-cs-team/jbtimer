@@ -13,7 +13,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'JBTimer',
       theme: ThemeData(
-        colorScheme: const ColorScheme.dark(outline: Colors.white),
+        colorScheme: const ColorScheme.dark(
+          outline: Colors.white,
+          surfaceTint: Colors.white10,
+        ),
         useMaterial3: true,
       ),
       home: const MainPage(),
