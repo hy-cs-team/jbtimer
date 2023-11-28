@@ -41,19 +41,19 @@ class Statistics extends StatelessWidget {
               children: [
                 StatisticsItem(
                   name: 'best 5',
-                  value: session.best5?.average?.recordFormat ?? 'N/A',
+                  value: session.best5?.short ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'avg of 5',
-                  value: session.avg5?.average?.recordFormat ?? 'N/A',
+                  value: session.avg5?.short ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'best 12',
-                  value: session.best12?.average?.recordFormat ?? 'N/A',
+                  value: session.best12?.short ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'avg of 12',
-                  value: session.avg12?.average?.recordFormat ?? 'N/A',
+                  value: session.avg12?.short ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'best',
@@ -65,7 +65,7 @@ class Statistics extends StatelessWidget {
                 ),
                 StatisticsItem(
                   name: 'average',
-                  value: session.stat.average?.recordFormat ?? 'N/A',
+                  value: session.stat.short ?? 'N/A',
                 ),
               ],
             ),

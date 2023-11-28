@@ -1,4 +1,5 @@
 import 'package:jbtimer/data/record.dart';
+import 'package:jbtimer/extensions/format_extensions.dart';
 
 class RecordListStat {
   late final int total;
@@ -6,12 +7,16 @@ class RecordListStat {
   late final Record? best;
   late final Record? worst;
 
+  late final String? short;
+
   RecordListStat._({
     required this.total,
     this.average,
     this.best,
     this.worst,
-  });
+  }) {
+    short = average?.recordFormat;
+  }
 
   factory RecordListStat.analyze(List<Record> recordList, int start, int end) {
     int total = end - start;
