@@ -23,7 +23,7 @@ class Session {
   Session()
       : _records = [],
         total = 0,
-        average = 0,
+        average = null,
         best = null,
         worst = null;
 
