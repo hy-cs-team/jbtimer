@@ -11,7 +11,10 @@ class StatisticsItem extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(name),
+        Text(
+          name,
+          style: const TextStyle(fontSize: 12.0),
+        ),
         Text(value),
       ],
     );
