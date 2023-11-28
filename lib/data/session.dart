@@ -29,14 +29,15 @@ class Session {
 
   Session._copyFrom(Session original) : _records = original._records {
     total = _records.length;
-    average = (_records.map((r) => r.recordMs).reduce((a, b) => a + b) /
-            _records.length)
-        .round();
-    best = _findBest();
-    worst = _findWorst();
+    best = _getBest();
+    worst = _getWorst();
+    average = _records.length >= 3
+        ? ((_sum() - best!.recordMs - worst!.recordMs) / (_records.length - 2))
+            .round()
+        : null;
   }
 
-  _findBest() {
+  _getBest() {
     Record? best;
     for (final record in _records) {
       if (best == null || record.recordMs < best.recordMs) {
@@ -46,7 +47,7 @@ class Session {
     return best;
   }
 
-  _findWorst() {
+  _getWorst() {
     Record? worst;
     for (final record in _records) {
       if (worst == null || record.recordMs > worst.recordMs) {
@@ -54,5 +55,9 @@ class Session {
       }
     }
     return worst;
+  }
+
+  _sum() {
+    return _records.map((r) => r.recordMs).reduce((a, b) => a + b);
   }
 }
