@@ -38,12 +38,17 @@ class _JBComponentState extends State<JBComponent> {
           _state = _State.tapDown;
         });
       },
-      onTapUp: (details) {
+      onTapCancel: () {
+        setState(() {
+          _state = _State.idle;
+        });
+      },
+      onTap: () {
         setState(() {
           _state = _State.tap;
         });
+        widget.onPressed?.call();
       },
-      onTap: widget.onPressed,
       child: content,
     );
   }
