@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics_item.dart';
+import 'package:jbtimer/extensions/format_extensions.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 class Statistics extends StatelessWidget {
@@ -16,13 +17,13 @@ class Statistics extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: sessionController,
-      builder: (context, value, child) => Column(
+      builder: (context, session, child) => Column(
         children: [
           if (showTotalCount) ...[
             const SizedBox(height: 8.0),
             Center(
               child: Text(
-                '${value.total} records',
+                '${session.total} records',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -37,14 +38,23 @@ class Statistics extends StatelessWidget {
               ),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                StatisticsItem(name: 'best 5', value: 'N/A'),
-                StatisticsItem(name: 'avg of 5', value: 'N/A'),
-                StatisticsItem(name: 'best 12', value: 'N/A'),
-                StatisticsItem(name: 'avg of 12', value: 'N/A'),
-                StatisticsItem(name: 'best', value: 'N/A'),
-                StatisticsItem(name: 'worst', value: 'N/A'),
-                StatisticsItem(name: 'average', value: 'N/A'),
+              children: [
+                const StatisticsItem(name: 'best 5', value: 'N/A'),
+                const StatisticsItem(name: 'avg of 5', value: 'N/A'),
+                const StatisticsItem(name: 'best 12', value: 'N/A'),
+                const StatisticsItem(name: 'avg of 12', value: 'N/A'),
+                StatisticsItem(
+                  name: 'best',
+                  value: session.best?.recordMs.recordFormat ?? 'N/A',
+                ),
+                StatisticsItem(
+                  name: 'worst',
+                  value: session.worst?.recordMs.recordFormat ?? 'N/A',
+                ),
+                StatisticsItem(
+                  name: 'average',
+                  value: session.average?.recordFormat ?? 'N/A',
+                ),
               ],
             ),
           ),

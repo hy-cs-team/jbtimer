@@ -3,7 +3,10 @@ import 'package:jbtimer/data/record.dart';
 class Session {
   final List<Record> _records;
 
-  int get total => _records.length;
+  late final int total;
+  late final int? average;
+  late final Record? best;
+  late final Record? worst;
 
   bool _isStale = false;
 
@@ -17,7 +20,39 @@ class Session {
     return Session._copyFrom(this);
   }
 
-  Session() : _records = [];
+  Session()
+      : _records = [],
+        total = 0,
+        average = 0,
+        best = null,
+        worst = null;
 
-  Session._copyFrom(Session original) : _records = original._records {}
+  Session._copyFrom(Session original) : _records = original._records {
+    total = _records.length;
+    average = (_records.map((r) => r.recordMs).reduce((a, b) => a + b) /
+            _records.length)
+        .round();
+    best = _findBest();
+    worst = _findWorst();
+  }
+
+  _findBest() {
+    Record? best;
+    for (final record in _records) {
+      if (best == null || record.recordMs < best.recordMs) {
+        best = record;
+      }
+    }
+    return best;
+  }
+
+  _findWorst() {
+    Record? worst;
+    for (final record in _records) {
+      if (worst == null || record.recordMs > worst.recordMs) {
+        worst = record;
+      }
+    }
+    return worst;
+  }
 }
