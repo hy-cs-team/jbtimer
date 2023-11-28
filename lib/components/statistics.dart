@@ -23,7 +23,7 @@ class Statistics extends StatelessWidget {
             const SizedBox(height: 8.0),
             Center(
               child: Text(
-                '${session.total} records',
+                '${session.stat.total} records',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
@@ -45,15 +45,15 @@ class Statistics extends StatelessWidget {
                 const StatisticsItem(name: 'avg of 12', value: 'N/A'),
                 StatisticsItem(
                   name: 'best',
-                  value: session.best?.recordMs.recordFormat ?? 'N/A',
+                  value: session.stat.best?.recordMs.recordFormat ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'worst',
-                  value: session.worst?.recordMs.recordFormat ?? 'N/A',
+                  value: session.stat.worst?.recordMs.recordFormat ?? 'N/A',
                 ),
                 StatisticsItem(
                   name: 'average',
-                  value: session.average?.recordFormat ?? 'N/A',
+                  value: session.stat.average?.recordFormat ?? 'N/A',
                 ),
               ],
             ),

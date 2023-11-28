@@ -17,7 +17,7 @@ class HistoryPage extends StatelessWidget {
         title: ValueListenableBuilder(
           valueListenable: sessionController,
           builder: (context, value, child) =>
-              Text('Total ${value.total} records'),
+              Text('Total ${value.stat.total} records'),
         ),
         centerTitle: true,
       ),

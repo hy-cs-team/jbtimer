@@ -1,19 +1,17 @@
 import 'package:jbtimer/data/record.dart';
+import 'package:jbtimer/data/record_list_stat.dart';
 
 class Session {
   final List<Record> _records;
 
-  late final int total;
-  late final int? average;
-  late final Record? best;
-  late final Record? worst;
+  RecordListStat get stat => _safe(_stat);
+
+  late final RecordListStat _stat;
 
   bool _isStale = false;
 
   Session add(Record record) {
-    if (_isStale) {
-      throw StateError('Cannot call add() from a stale Session.');
-    }
+    _assertNotStale();
 
     _records.add(record);
     _isStale = true;
@@ -22,42 +20,21 @@ class Session {
 
   Session()
       : _records = [],
-        total = 0,
-        average = null,
-        best = null,
-        worst = null;
+        _stat = RecordListStat.analyze([], 0, 0);
 
   Session._copyFrom(Session original) : _records = original._records {
-    total = _records.length;
-    best = _getBest();
-    worst = _getWorst();
-    average = _records.length >= 3
-        ? ((_sum() - best!.recordMs - worst!.recordMs) / (_records.length - 2))
-            .round()
-        : null;
+    _stat = RecordListStat.analyze(_records, 0, _records.length);
   }
 
-  _getBest() {
-    Record? best;
-    for (final record in _records) {
-      if (best == null || record.recordMs < best.recordMs) {
-        best = record;
-      }
+  T _safe<T>(T value) {
+    _assertNotStale();
+
+    return value;
+  }
+
+  _assertNotStale() {
+    if (_isStale) {
+      throw StateError('Cannot call add() from a stale Session.');
     }
-    return best;
-  }
-
-  _getWorst() {
-    Record? worst;
-    for (final record in _records) {
-      if (worst == null || record.recordMs > worst.recordMs) {
-        worst = record;
-      }
-    }
-    return worst;
-  }
-
-  _sum() {
-    return _records.map((r) => r.recordMs).reduce((a, b) => a + b);
   }
 }
