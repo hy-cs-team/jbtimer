@@ -44,7 +44,7 @@ class Statistics extends StatelessWidget {
                   value: session.best5?.short ?? 'N/A',
                 ),
                 StatisticsItem(
-                  name: 'avg of 5',
+                  name: 'avg 5',
                   value: session.avg5?.short ?? 'N/A',
                 ),
                 StatisticsItem(
@@ -52,7 +52,7 @@ class Statistics extends StatelessWidget {
                   value: session.best12?.short ?? 'N/A',
                 ),
                 StatisticsItem(
-                  name: 'avg of 12',
+                  name: 'avg 12',
                   value: session.avg12?.short ?? 'N/A',
                 ),
                 StatisticsItem(
