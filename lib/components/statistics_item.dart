@@ -5,12 +5,14 @@ class StatisticsItem extends StatelessWidget {
   final String name;
   final int? record;
   final double? standardDeviation;
+  final Color? recordColor;
 
   const StatisticsItem({
     super.key,
     required this.name,
     required this.record,
     this.standardDeviation,
+    this.recordColor,
   });
 
   @override
@@ -20,7 +22,10 @@ class StatisticsItem extends StatelessWidget {
       children: [
         Text(
           name,
-          style: const TextStyle(fontSize: 12.0),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 12.0,
+          ),
         ),
         RichText(
           text: TextSpan(
@@ -28,7 +33,7 @@ class StatisticsItem extends StatelessWidget {
               TextSpan(
                 text: record?.recordFormat ?? 'N/A',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: recordColor ?? Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               if (record != null && standardDeviation != null)

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jbtimer/components/highlighted_statistics_item.dart';
 import 'package:jbtimer/components/statistics_item.dart';
-import 'package:jbtimer/extensions/format_extensions.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 class Statistics extends StatelessWidget {
@@ -39,33 +39,37 @@ class Statistics extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                StatisticsItem(
+                HighlightedStatisticsItem(
                   name: 'best 5',
                   record: session.best5?.average,
                   standardDeviation: session.best5?.standardDeviation,
+                  recordHighlightColor: Colors.blue,
                 ),
                 StatisticsItem(
                   name: 'avg 5',
                   record: session.avg5?.average,
                   standardDeviation: session.avg5?.standardDeviation,
                 ),
-                StatisticsItem(
+                HighlightedStatisticsItem(
                   name: 'best 12',
                   record: session.best12?.average,
                   standardDeviation: session.best12?.standardDeviation,
+                  recordHighlightColor: Colors.blue,
                 ),
                 StatisticsItem(
                   name: 'avg 12',
                   record: session.avg12?.average,
                   standardDeviation: session.avg12?.standardDeviation,
                 ),
-                StatisticsItem(
+                HighlightedStatisticsItem(
                   name: 'best',
                   record: session.stat.best?.recordMs,
+                  recordHighlightColor: Colors.blue,
                 ),
-                StatisticsItem(
+                HighlightedStatisticsItem(
                   name: 'worst',
                   record: session.stat.worst?.recordMs,
+                  recordHighlightColor: Colors.red,
                 ),
                 StatisticsItem(
                   name: 'average',
