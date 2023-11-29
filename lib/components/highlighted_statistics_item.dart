@@ -31,7 +31,7 @@ class _HighlightedStatisticsItemState extends State<HighlightedStatisticsItem>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(seconds: 1),
     );
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
