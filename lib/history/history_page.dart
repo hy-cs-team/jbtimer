@@ -30,8 +30,10 @@ class HistoryPage extends StatelessWidget {
           ),
           const Divider(
             thickness: 1.0,
+            height: 1.0,
             indent: 12.0,
             endIndent: 12.0,
+            color: Color(0xff808080),
           ),
           Expanded(child: HistoryList(session: sessionController.value)),
         ],
