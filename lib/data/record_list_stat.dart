@@ -117,6 +117,6 @@ class RecordListStat {
       }
     }
 
-    return ((sum - best - worst) / (end - start)).round();
+    return ((sum - best - worst) / (end - start - 2)).round();
   }
 }
