@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:jbtimer/data/record.dart';
-import 'package:jbtimer/extensions/format_extensions.dart';
 
 class RecordListStat {
   late final int total;
@@ -10,17 +9,13 @@ class RecordListStat {
   late final Record? best;
   late final Record? worst;
 
-  late final String? short;
-
   RecordListStat._({
     required this.total,
     this.average,
     this.standardDeviation,
     this.best,
     this.worst,
-  }) {
-    short = _getShortString(average, standardDeviation);
-  }
+  });
 
   factory RecordListStat.analyze(List<Record> recordList, int start, int end) {
     int total = end - start;
@@ -43,19 +38,6 @@ class RecordListStat {
       average: average,
       standardDeviation: standardDeviation,
     );
-  }
-
-  static String? _getShortString(int? average, double? standardDeviation) {
-    if (average == null) {
-      return null;
-    }
-
-    String avgString = average.recordFormat;
-    if (standardDeviation == null) {
-      return avgString;
-    }
-
-    return '$avgString (σ=${standardDeviation.toStringAsFixed(2)})';
   }
 
   static double _getStandardDeviation(

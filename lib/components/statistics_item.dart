@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:jbtimer/extensions/format_extensions.dart';
 
 class StatisticsItem extends StatelessWidget {
   final String name;
-  final String value;
+  final int? record;
+  final double? standardDeviation;
 
-  const StatisticsItem({super.key, required this.name, required this.value});
+  const StatisticsItem({
+    super.key,
+    required this.name,
+    required this.record,
+    this.standardDeviation,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,26 @@ class StatisticsItem extends StatelessWidget {
           name,
           style: const TextStyle(fontSize: 12.0),
         ),
-        Text(value),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: record?.recordFormat ?? 'N/A',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              if (record != null && standardDeviation != null)
+                TextSpan(
+                  text: ' (σ=${standardDeviation!.toStringAsFixed(2)})',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 12.0,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }

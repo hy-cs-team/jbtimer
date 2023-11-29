@@ -41,31 +41,36 @@ class Statistics extends StatelessWidget {
               children: [
                 StatisticsItem(
                   name: 'best 5',
-                  value: session.best5?.short ?? 'N/A',
+                  record: session.best5?.average,
+                  standardDeviation: session.best5?.standardDeviation,
                 ),
                 StatisticsItem(
                   name: 'avg 5',
-                  value: session.avg5?.short ?? 'N/A',
+                  record: session.avg5?.average,
+                  standardDeviation: session.avg5?.standardDeviation,
                 ),
                 StatisticsItem(
                   name: 'best 12',
-                  value: session.best12?.short ?? 'N/A',
+                  record: session.best12?.average,
+                  standardDeviation: session.best12?.standardDeviation,
                 ),
                 StatisticsItem(
                   name: 'avg 12',
-                  value: session.avg12?.short ?? 'N/A',
+                  record: session.avg12?.average,
+                  standardDeviation: session.avg12?.standardDeviation,
                 ),
                 StatisticsItem(
                   name: 'best',
-                  value: session.stat.best?.recordMs.recordFormat ?? 'N/A',
+                  record: session.stat.best?.recordMs,
                 ),
                 StatisticsItem(
                   name: 'worst',
-                  value: session.stat.worst?.recordMs.recordFormat ?? 'N/A',
+                  record: session.stat.worst?.recordMs,
                 ),
                 StatisticsItem(
                   name: 'average',
-                  value: session.stat.short ?? 'N/A',
+                  record: session.stat.average,
+                  standardDeviation: session.stat.standardDeviation,
                 ),
               ],
             ),
