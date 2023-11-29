@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:jbtimer/data/record.dart';
@@ -11,16 +11,18 @@ enum RecordState {
   penalty,
   running;
 
-  getColorByState(RecordState state) {
-    switch (state) {
+  Color get color {
+    switch (this) {
       case RecordState.idle:
         return const Color(0xFF000000);
       case RecordState.preview:
-        return const Color(0xFF453C67);
+        return const Color(0xFFF2F7A1);
       case RecordState.penalty:
         return const Color(0xFF6D67E4);
       case RecordState.running:
         return const Color(0xFF46C2CB);
+      default:
+        return const Color(0xFF000000);
     }
   }
 }
@@ -34,16 +36,113 @@ class RecordArea extends StatefulWidget {
 }
 
 class _RecordAreaState extends State<RecordArea> {
+  RecordState _recordState = RecordState.idle;
+  int _previewTime = 15;
+  int _elapsedPrviewTime = 0;
+  int _elapsedTime = 0;
+  Timer? previewCountDownTimer;
+  Timer? _penaltyTimer;
+  Timer? _recordTimer;
+  DateTime _startAt = DateTime.now();
+
+  void startPreview() {
+    setState(() {
+      _recordState = RecordState.preview;
+    });
+
+    previewCountDownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _previewTime--;
+        if (_previewTime == 0) {
+          startPenalty();
+          timer.cancel();
+        }
+      });
+    });
+  }
+
+  void startPenalty() {
+    setState(() {
+      _recordState = RecordState.penalty;
+    });
+
+    _penaltyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedPrviewTime++;
+      });
+    });
+  }
+
+  void startRecord() {
+    setState(() {
+      _recordState = RecordState.running;
+      _startAt = DateTime.now();
+    });
+    _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _elapsedTime++;
+      });
+    });
+    _penaltyTimer?.cancel();
+  }
+
+  void stopRecord() {
+    _recordTimer?.cancel();
+    widget.sessionController.add(Record(
+      dateTime: _startAt,
+      recordMs: _elapsedPrviewTime + _elapsedTime,
+    ));
+  }
+
+  void reset() {
+    setState(() {
+      _previewTime = 15;
+      _elapsedPrviewTime = 0;
+      _elapsedTime = 0;
+    });
+    previewCountDownTimer?.cancel();
+    _penaltyTimer?.cancel();
+  }
+
+  @override
+  void dispose() {
+    previewCountDownTimer?.cancel();
+    _penaltyTimer?.cancel();
+    super.dispose();
+  }
+
+  void onRecordAreaTapped() {
+    if (_recordState == RecordState.idle) {
+      startPreview();
+    } else if (_recordState == RecordState.preview ||
+        _recordState == RecordState.penalty) {
+      startRecord();
+    } else {
+      stopRecord();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final displayWidget = _recordState == RecordState.preview
+        ? Text(
+            'Countdown: $_previewTime seconds',
+            style: const TextStyle(fontSize: 24),
+          )
+        : _recordState == RecordState.penalty
+            ? Text(
+                'Penalty Time: $_elapsedPrviewTime seconds',
+                style: const TextStyle(fontSize: 24),
+              )
+            : Text(
+                'Elapsed Time: $_elapsedTime seconds',
+                style: const TextStyle(fontSize: 24),
+              );
     return JBComponent(
-      onPressed: () {
-        widget.sessionController.add(Record(
-            dateTime: DateTime.now(),
-            recordMs: Random().nextInt(15000) + 15000));
-      },
-      child: const Center(
-        child: Text('0:00.000'),
+      downColor: _recordState.color,
+      onPressed: onRecordAreaTapped,
+      child: Center(
+        child: displayWidget,
       ),
     );
   }
