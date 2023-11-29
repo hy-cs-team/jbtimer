@@ -4,6 +4,8 @@ import 'package:jbtimer/data/record_list_stat.dart';
 class Session {
   final List<Record> _records;
 
+  List<Record> get records => List.from(_safe(_records));
+
   RecordListStat get stat => _safe(_stat);
 
   RecordListStat? get best5 => _safe(_best5);

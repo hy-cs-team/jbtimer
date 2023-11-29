@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics.dart';
+import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 class HistoryPage extends StatelessWidget {
@@ -32,6 +33,7 @@ class HistoryPage extends StatelessWidget {
             indent: 12.0,
             endIndent: 12.0,
           ),
+          Expanded(child: HistoryList(session: sessionController.value)),
         ],
       ),
     );
