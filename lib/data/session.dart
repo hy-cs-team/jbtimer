@@ -25,9 +25,22 @@ class Session {
   bool _isStale = false;
 
   Session add(Record record) {
+    return _safeExecute(() {
+      _records.add(record);
+    });
+  }
+
+  Session delete(Record record) {
+    return _safeExecute(() {
+      _records.remove(record);
+    });
+  }
+
+  Session _safeExecute(void Function() job) {
     _assertNotStale();
 
-    _records.add(record);
+    job.call();
+
     _isStale = true;
     return Session._copyFrom(this);
   }
