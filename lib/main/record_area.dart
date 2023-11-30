@@ -40,7 +40,7 @@ class _RecordAreaState extends State<RecordArea> {
   int _previewTime = 15;
   int _elapsedPrviewTime = 0;
   int _elapsedTime = 0;
-  Timer? previewCountDownTimer;
+  Timer? _previewCountDownTimer;
   Timer? _penaltyTimer;
   Timer? _recordTimer;
   DateTime _startAt = DateTime.now();
@@ -50,7 +50,8 @@ class _RecordAreaState extends State<RecordArea> {
       _recordState = RecordState.preview;
     });
 
-    previewCountDownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _previewCountDownTimer =
+        Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _previewTime--;
         if (_previewTime == 0) {
@@ -92,21 +93,23 @@ class _RecordAreaState extends State<RecordArea> {
       dateTime: _startAt,
       recordMs: _elapsedPrviewTime + _elapsedTime,
     ));
+    reset();
   }
 
   void reset() {
     setState(() {
+      _recordState = RecordState.idle;
       _previewTime = 15;
       _elapsedPrviewTime = 0;
       _elapsedTime = 0;
     });
-    previewCountDownTimer?.cancel();
+    _previewCountDownTimer?.cancel();
     _penaltyTimer?.cancel();
   }
 
   @override
   void dispose() {
-    previewCountDownTimer?.cancel();
+    _previewCountDownTimer?.cancel();
     _penaltyTimer?.cancel();
     super.dispose();
   }
@@ -126,7 +129,7 @@ class _RecordAreaState extends State<RecordArea> {
   Widget build(BuildContext context) {
     final displayWidget = _recordState == RecordState.preview
         ? Text(
-            'Countdown: $_previewTime seconds',
+            'Preview: $_previewTime seconds',
             style: const TextStyle(fontSize: 24),
           )
         : _recordState == RecordState.penalty
