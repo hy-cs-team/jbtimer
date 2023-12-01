@@ -35,7 +35,7 @@ class HistoryPage extends StatelessWidget {
             endIndent: 12.0,
             color: Color(0xff808080),
           ),
-          Expanded(child: HistoryList(session: sessionController.value)),
+          Expanded(child: HistoryList(sessionController: sessionController)),
         ],
       ),
     );

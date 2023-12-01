@@ -8,4 +8,8 @@ class SessionController extends ValueNotifier<Session> {
   void add(Record record) {
     value = value.add(record);
   }
+
+  void delete(Record record) {
+    value = value.delete(record);
+  }
 }

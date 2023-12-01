@@ -10,7 +10,7 @@ extension FormatExtensions on int {
     int m = total;
 
     String fromSecond =
-        '${s.toString().padLeft(2, '0')}:${ms.toString().padLeft(3, '0')}';
+        '${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
     if (m == 0) {
       return fromSecond;
     }
