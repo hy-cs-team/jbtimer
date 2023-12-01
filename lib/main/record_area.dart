@@ -37,7 +37,6 @@ class RecordArea extends StatefulWidget {
 
 class _RecordAreaState extends State<RecordArea> {
   _RecordState _recordState = _RecordState.idle;
-  DateTime _startAt = DateTime.now();
   int _previewTime = 0;
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
@@ -72,7 +71,6 @@ class _RecordAreaState extends State<RecordArea> {
     setState(() {
       _previewTime = _stopwatch.elapsed.inMilliseconds;
       _recordState = _RecordState.running;
-      _startAt = DateTime.now();
     });
     _stopwatch.reset();
     _stopwatch.start();
@@ -86,7 +84,7 @@ class _RecordAreaState extends State<RecordArea> {
     _stopwatch.stop();
     _timer.cancel();
     widget.sessionController.add(Record(
-      dateTime: _startAt,
+      dateTime: DateTime.now(),
       recordMs: _previewTime + _stopwatch.elapsed.inMilliseconds,
     ));
     reset();
