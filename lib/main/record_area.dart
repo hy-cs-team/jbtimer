@@ -9,7 +9,6 @@ import 'package:jbtimer/main/session_controller.dart';
 enum _RecordState {
   idle,
   preview,
-  penalty,
   running;
 
   Color get color {
@@ -18,8 +17,8 @@ enum _RecordState {
         return const Color(0xFF000000);
       case _RecordState.preview:
         return const Color(0xFFF2F7A1);
-      case _RecordState.penalty:
-        return const Color(0xFF6D67E4);
+      // case _RecordState.penalty:
+      //   return const Color(0xFF6D67E4);
       case _RecordState.running:
         return const Color(0xFF46C2CB);
       default:
@@ -58,7 +57,7 @@ class _RecordAreaState extends State<RecordArea> {
       _recordState = _RecordState.preview;
     });
     _previewStopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
       final leftPreviewTime = Duration(
         milliseconds:
             _previewStopwatch.elapsed.inMilliseconds < _previewTimeMilli
@@ -79,7 +78,7 @@ class _RecordAreaState extends State<RecordArea> {
     });
 
     _stopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
       final runningTimeString = _stopwatch.elapsed.inMilliseconds.recordFormat;
       _stopwatchStreamController.sink.add(runningTimeString);
     });
@@ -112,7 +111,6 @@ class _RecordAreaState extends State<RecordArea> {
         startPreview();
         break;
       case _RecordState.preview:
-      case _RecordState.penalty:
         startRecord();
         break;
       case _RecordState.running:
@@ -132,16 +130,39 @@ class _RecordAreaState extends State<RecordArea> {
       child: StreamBuilder<String>(
         stream: _stopwatchStreamController.stream,
         builder: (context, snapshot) {
-          final isOverPreviewTime = _recordState == _RecordState.preview &&
-              _previewStopwatch.elapsed.inMilliseconds > _previewTimeMilli;
-          final timerTextStyle = TextStyle(
-            fontSize: 24,
-            color: isOverPreviewTime ? Colors.red : Colors.white,
-          );
-          return Center(
-            child: Text(
-              snapshot.data ?? _previewTimeMilli.recordFormat,
-              style: timerTextStyle,
+          Color startColor, endColor;
+          int elapsedTime, totalDuration;
+
+          if (_recordState == _RecordState.preview) {
+            startColor = Colors.red.shade300;
+            endColor = Colors.red.shade800;
+            elapsedTime = _previewStopwatch.elapsed.inMilliseconds;
+            totalDuration = _previewTimeMilli;
+          } else if (_recordState == _RecordState.running) {
+            startColor = Colors.purple.shade300;
+            endColor = Colors.purple.shade900;
+            elapsedTime = _stopwatch.elapsed.inMilliseconds;
+            totalDuration = 60000;
+          } else {
+            startColor = endColor = _recordState.color;
+            elapsedTime = totalDuration = 1;
+          }
+
+          double progress = elapsedTime / totalDuration;
+          Color animatedColor =
+              Color.lerp(startColor, endColor, progress.clamp(0.0, 1.0)) ??
+                  Colors.transparent;
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            decoration: BoxDecoration(
+              color: animatedColor,
+            ),
+            child: Center(
+              child: Text(
+                snapshot.data ?? _previewTimeMilli.recordFormat,
+                style: const TextStyle(fontSize: 24),
+              ),
             ),
           );
         },
