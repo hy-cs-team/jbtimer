@@ -16,9 +16,9 @@ enum _RecordState {
       case _RecordState.idle:
         return const Color(0xFF000000);
       case _RecordState.preview:
-        return const Color(0xFFF2F7A1);
+        return const Color(0xFF6D67E4);
       case _RecordState.running:
-        return const Color(0xFF46C2CB);
+        return const Color(0xFF453C67);
       default:
         return const Color(0xFF000000);
     }
@@ -40,7 +40,7 @@ class _RecordAreaState extends State<RecordArea> {
   int _previewTime = 0;
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
-  final _stopwatchStreamController = StreamController<String>();
+  final _stopwatchStreamController = StreamController<int>();
 
   @override
   void dispose() {
@@ -60,8 +60,7 @@ class _RecordAreaState extends State<RecordArea> {
             ? _previewTimeMilli - _stopwatch.elapsed.inMilliseconds
             : _stopwatch.elapsed.inMilliseconds - _previewTimeMilli,
       );
-      final leftPreviewTimeString = leftPreviewTime.inMilliseconds.recordFormat;
-      _stopwatchStreamController.sink.add(leftPreviewTimeString);
+      _stopwatchStreamController.sink.add(leftPreviewTime.inMilliseconds);
     });
   }
 
@@ -69,14 +68,15 @@ class _RecordAreaState extends State<RecordArea> {
     _stopwatch.stop();
     _timer.cancel();
     setState(() {
-      _previewTime = _stopwatch.elapsed.inMilliseconds;
+      _previewTime = _stopwatch.elapsed.inMilliseconds > _previewTimeMilli
+          ? _stopwatch.elapsed.inMilliseconds - _previewTimeMilli
+          : 0;
       _recordState = _RecordState.running;
     });
     _stopwatch.reset();
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
-      final runningTimeString = _stopwatch.elapsed.inMilliseconds.recordFormat;
-      _stopwatchStreamController.sink.add(runningTimeString);
+      _stopwatchStreamController.sink.add(_stopwatch.elapsed.inMilliseconds);
     });
   }
 
@@ -119,40 +119,22 @@ class _RecordAreaState extends State<RecordArea> {
     return JBComponent(
       downColor: _recordState.color,
       onPressed: onRecordAreaTapped,
-      child: StreamBuilder<String>(
+      child: StreamBuilder<int>(
         stream: _stopwatchStreamController.stream,
         builder: (context, snapshot) {
-          Color startColor, endColor;
-          int elapsedTime, totalDuration;
-
-          if (_recordState == _RecordState.preview) {
-            startColor = Colors.red.shade300;
-            endColor = Colors.red.shade800;
-            elapsedTime = _stopwatch.elapsed.inMilliseconds;
-            totalDuration = _previewTimeMilli;
-          } else if (_recordState == _RecordState.running) {
-            startColor = Colors.purple.shade300;
-            endColor = Colors.purple.shade900;
-            elapsedTime = _stopwatch.elapsed.inMilliseconds;
-            totalDuration = 60000;
-          } else {
-            startColor = endColor = _recordState.color;
-            elapsedTime = totalDuration = 1;
-          }
-
-          double progress = elapsedTime / totalDuration;
-          Color animatedColor =
-              Color.lerp(startColor, endColor, progress.clamp(0.0, 1.0)) ??
-                  Colors.transparent;
-
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
+          final isOverPreviewTime = _recordState == _RecordState.preview &&
+              _stopwatch.elapsed.inMilliseconds > _previewTimeMilli;
+          final backgroundColor =
+              isOverPreviewTime ? Colors.red.shade900 : _recordState.color;
+          return Container(
             decoration: BoxDecoration(
-              color: animatedColor,
+              color: backgroundColor,
             ),
             child: Center(
               child: Text(
-                snapshot.data ?? _previewTimeMilli.recordFormat,
+                snapshot.data != null
+                    ? snapshot.data!.recordFormat.toString()
+                    : _previewTimeMilli.recordFormat,
                 style: const TextStyle(fontSize: 24),
               ),
             ),
