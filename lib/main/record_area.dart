@@ -5,7 +5,7 @@ import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
-enum RecordState {
+enum _RecordState {
   idle,
   preview,
   penalty,
@@ -13,13 +13,13 @@ enum RecordState {
 
   Color get color {
     switch (this) {
-      case RecordState.idle:
+      case _RecordState.idle:
         return const Color(0xFF000000);
-      case RecordState.preview:
+      case _RecordState.preview:
         return const Color(0xFFF2F7A1);
-      case RecordState.penalty:
+      case _RecordState.penalty:
         return const Color(0xFF6D67E4);
-      case RecordState.running:
+      case _RecordState.running:
         return const Color(0xFF46C2CB);
       default:
         return const Color(0xFF000000);
@@ -36,9 +36,9 @@ class RecordArea extends StatefulWidget {
 }
 
 class _RecordAreaState extends State<RecordArea> {
-  RecordState _recordState = RecordState.idle;
+  _RecordState _recordState = _RecordState.idle;
   int _previewTime = 15;
-  int _elapsedPrviewTime = 0;
+  int _elapsedPreviewTime = 0;
   int _elapsedTime = 0;
   Timer? _previewCountDownTimer;
   Timer? _penaltyTimer;
@@ -47,7 +47,7 @@ class _RecordAreaState extends State<RecordArea> {
 
   void startPreview() {
     setState(() {
-      _recordState = RecordState.preview;
+      _recordState = _RecordState.preview;
     });
 
     _previewCountDownTimer =
@@ -64,19 +64,19 @@ class _RecordAreaState extends State<RecordArea> {
 
   void startPenalty() {
     setState(() {
-      _recordState = RecordState.penalty;
+      _recordState = _RecordState.penalty;
     });
 
     _penaltyTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        _elapsedPrviewTime++;
+        _elapsedPreviewTime++;
       });
     });
   }
 
   void startRecord() {
     setState(() {
-      _recordState = RecordState.running;
+      _recordState = _RecordState.running;
       _startAt = DateTime.now();
     });
     _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -91,16 +91,16 @@ class _RecordAreaState extends State<RecordArea> {
     _recordTimer?.cancel();
     widget.sessionController.add(Record(
       dateTime: _startAt,
-      recordMs: _elapsedPrviewTime + _elapsedTime,
+      recordMs: _elapsedPreviewTime + _elapsedTime,
     ));
     reset();
   }
 
   void reset() {
     setState(() {
-      _recordState = RecordState.idle;
+      _recordState = _RecordState.idle;
       _previewTime = 15;
-      _elapsedPrviewTime = 0;
+      _elapsedPreviewTime = 0;
       _elapsedTime = 0;
     });
     _previewCountDownTimer?.cancel();
@@ -115,26 +115,33 @@ class _RecordAreaState extends State<RecordArea> {
   }
 
   void onRecordAreaTapped() {
-    if (_recordState == RecordState.idle) {
-      startPreview();
-    } else if (_recordState == RecordState.preview ||
-        _recordState == RecordState.penalty) {
-      startRecord();
-    } else {
-      stopRecord();
+    switch (_recordState) {
+      case _RecordState.idle:
+        startPreview();
+        break;
+      case _RecordState.preview:
+      case _RecordState.penalty:
+        startRecord();
+        break;
+      case _RecordState.running:
+        stopRecord();
+        break;
+      default:
+        stopRecord();
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayWidget = _recordState == RecordState.preview
+    final displayWidget = _recordState == _RecordState.preview
         ? Text(
             'Preview: $_previewTime seconds',
             style: const TextStyle(fontSize: 24),
           )
-        : _recordState == RecordState.penalty
+        : _recordState == _RecordState.penalty
             ? Text(
-                'Penalty Time: $_elapsedPrviewTime seconds',
+                'Penalty Time: $_elapsedPreviewTime seconds',
                 style: const TextStyle(fontSize: 24),
               )
             : Text(
