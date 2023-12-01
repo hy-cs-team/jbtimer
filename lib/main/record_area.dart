@@ -17,8 +17,6 @@ enum _RecordState {
         return const Color(0xFF000000);
       case _RecordState.preview:
         return const Color(0xFFF2F7A1);
-      // case _RecordState.penalty:
-      //   return const Color(0xFF6D67E4);
       case _RecordState.running:
         return const Color(0xFF46C2CB);
       default:
@@ -40,7 +38,7 @@ class RecordArea extends StatefulWidget {
 class _RecordAreaState extends State<RecordArea> {
   _RecordState _recordState = _RecordState.idle;
   DateTime _startAt = DateTime.now();
-  final Stopwatch _previewStopwatch = Stopwatch();
+  int _previewTime = 0;
   final Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
   final _stopwatchStreamController = StreamController<String>();
@@ -56,13 +54,12 @@ class _RecordAreaState extends State<RecordArea> {
     setState(() {
       _recordState = _RecordState.preview;
     });
-    _previewStopwatch.start();
+    _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
       final leftPreviewTime = Duration(
-        milliseconds:
-            _previewStopwatch.elapsed.inMilliseconds < _previewTimeMilli
-                ? _previewTimeMilli - _previewStopwatch.elapsed.inMilliseconds
-                : _previewStopwatch.elapsed.inMilliseconds - _previewTimeMilli,
+        milliseconds: _stopwatch.elapsed.inMilliseconds < _previewTimeMilli
+            ? _previewTimeMilli - _stopwatch.elapsed.inMilliseconds
+            : _stopwatch.elapsed.inMilliseconds - _previewTimeMilli,
       );
       final leftPreviewTimeString = leftPreviewTime.inMilliseconds.recordFormat;
       _stopwatchStreamController.sink.add(leftPreviewTimeString);
@@ -70,13 +67,14 @@ class _RecordAreaState extends State<RecordArea> {
   }
 
   void startRecord() {
-    _previewStopwatch.stop();
+    _stopwatch.stop();
     _timer.cancel();
     setState(() {
+      _previewTime = _stopwatch.elapsed.inMilliseconds;
       _recordState = _RecordState.running;
       _startAt = DateTime.now();
     });
-
+    _stopwatch.reset();
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
       final runningTimeString = _stopwatch.elapsed.inMilliseconds.recordFormat;
@@ -87,18 +85,14 @@ class _RecordAreaState extends State<RecordArea> {
   void stopRecord() {
     _stopwatch.stop();
     _timer.cancel();
-    final previewTime = _previewStopwatch.elapsed.inMilliseconds < 15000
-        ? 0
-        : _previewStopwatch.elapsed.inMilliseconds - 15000;
     widget.sessionController.add(Record(
       dateTime: _startAt,
-      recordMs: previewTime + _stopwatch.elapsed.inMilliseconds,
+      recordMs: _previewTime + _stopwatch.elapsed.inMilliseconds,
     ));
     reset();
   }
 
   void reset() {
-    _previewStopwatch.reset();
     _stopwatch.reset();
     setState(() {
       _recordState = _RecordState.idle;
@@ -136,7 +130,7 @@ class _RecordAreaState extends State<RecordArea> {
           if (_recordState == _RecordState.preview) {
             startColor = Colors.red.shade300;
             endColor = Colors.red.shade800;
-            elapsedTime = _previewStopwatch.elapsed.inMilliseconds;
+            elapsedTime = _stopwatch.elapsed.inMilliseconds;
             totalDuration = _previewTimeMilli;
           } else if (_recordState == _RecordState.running) {
             startColor = Colors.purple.shade300;
