@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:jbtimer/data/record.dart';
+import 'package:jbtimer/extensions/format_extensions.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
@@ -45,16 +46,6 @@ class _RecordAreaState extends State<RecordArea> {
   late Timer _timer;
   final _stopwatchStreamController = StreamController<String>();
 
-  String _formatElapsedTime(Duration d) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String threeDigits(int n) => n.toString().padLeft(3, '0');
-    final twoDigitMinutes = twoDigits(d.inMinutes.remainder(60));
-    final twoDigitSeconds = twoDigits(d.inSeconds.remainder(60));
-    final threeDigitMilliseconds =
-        threeDigits(d.inMilliseconds.remainder(1000));
-    return "$twoDigitMinutes:$twoDigitSeconds.$threeDigitMilliseconds";
-  }
-
   @override
   void dispose() {
     _timer.cancel();
@@ -74,7 +65,7 @@ class _RecordAreaState extends State<RecordArea> {
                 ? _previewTimeMilli - _previewStopwatch.elapsed.inMilliseconds
                 : _previewStopwatch.elapsed.inMilliseconds - _previewTimeMilli,
       );
-      final leftPreviewTimeString = _formatElapsedTime(leftPreviewTime);
+      final leftPreviewTimeString = leftPreviewTime.inMilliseconds.recordFormat;
       _stopwatchStreamController.sink.add(leftPreviewTimeString);
     });
   }
@@ -89,7 +80,7 @@ class _RecordAreaState extends State<RecordArea> {
 
     _stopwatch.start();
     _timer = Timer.periodic(const Duration(milliseconds: 10), (_) {
-      final runningTimeString = _formatElapsedTime(_stopwatch.elapsed);
+      final runningTimeString = _stopwatch.elapsed.inMilliseconds.recordFormat;
       _stopwatchStreamController.sink.add(runningTimeString);
     });
   }
@@ -149,7 +140,7 @@ class _RecordAreaState extends State<RecordArea> {
           );
           return Center(
             child: Text(
-              snapshot.data ?? '00:15.000',
+              snapshot.data ?? _previewTimeMilli.recordFormat,
               style: timerTextStyle,
             ),
           );
