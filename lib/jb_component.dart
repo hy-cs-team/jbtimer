@@ -73,7 +73,7 @@ class _Content extends StatelessWidget {
         border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       duration: const Duration(milliseconds: 50),
-      child: child,
+      child: Center(child: child),
     );
   }
 }

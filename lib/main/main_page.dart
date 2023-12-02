@@ -27,7 +27,18 @@ class _MainPageState extends State<MainPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            JBComponent(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _sessionController.value.name,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8.0),
             JBComponent(
               child: Statistics(
                 sessionController: _sessionController,

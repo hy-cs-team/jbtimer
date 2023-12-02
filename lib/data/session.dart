@@ -2,6 +2,8 @@ import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/record_list_stat.dart';
 
 class Session {
+  final String name;
+
   final List<Record> _records;
 
   List<Record> get records => List.from(_safe(_records));
@@ -45,7 +47,7 @@ class Session {
     return Session._copyFrom(this);
   }
 
-  Session()
+  Session({this.name = 'Default Session'})
       : _records = [],
         _stat = RecordListStat.analyze([], 0, 0),
         _best5 = null,
@@ -53,7 +55,9 @@ class Session {
         _avg5 = null,
         _avg12 = null;
 
-  Session._copyFrom(Session original) : _records = original._records {
+  Session._copyFrom(Session original)
+      : _records = original._records,
+        name = original.name {
     _stat = RecordListStat.analyze(_records, 0, _records.length);
     _best5 = _getBestStat(5);
     _best12 = _getBestStat(12);
