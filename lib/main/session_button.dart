@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/session_controller.dart';
+import 'package:jbtimer/main/session_list_dialog.dart';
 
 class SessionButton extends StatelessWidget {
   final List<SessionController> sessionControllers;
@@ -27,44 +28,10 @@ class SessionButton extends StatelessWidget {
       onPressed: () {
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Select session'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: sessionControllers.asMap().entries.map((entry) {
-                final index = entry.key;
-                final sessionController = entry.value;
-                return TextButton(
-                  onPressed: () {
-                    onSelectedSessionIndexChanged(index);
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    sessionController.value.name,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                );
-              }).toList(),
-            ),
-            actions: [
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(
-                  'Create new session',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
+          builder: (context) => SessionListDialog(
+            context: context,
+            sessionControllers: sessionControllers,
+            onSelectedSessionIndexChanged: onSelectedSessionIndexChanged,
           ),
         );
       },
