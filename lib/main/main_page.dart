@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics.dart';
+import 'package:jbtimer/extensions/list_dispose_extensions.dart';
 import 'package:jbtimer/history/history_page.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/record_area.dart';
@@ -13,11 +14,20 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final SessionController _sessionController = SessionController();
+  late final List<SessionController> _sessionControllers;
+  int _selectedSessionIndex = 0;
+
+  get _sessionController => _sessionControllers[_selectedSessionIndex];
+
+  @override
+  void initState() {
+    _sessionControllers = [SessionController()];
+    super.initState();
+  }
 
   @override
   void dispose() {
-    _sessionController.dispose();
+    _sessionControllers.dispose();
     super.dispose();
   }
 
@@ -44,15 +54,24 @@ class _MainPageState extends State<MainPage> {
                     title: const Text('Select session'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextButton(
-                          onPressed: () {},
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children:
+                          _sessionControllers.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final sessionController = entry.value;
+                        return TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedSessionIndex = index;
+                            });
+                            Navigator.of(context).pop();
+                          },
                           child: Text(
-                            'Default Session',
+                            sessionController.value.name,
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
-                        ),
-                      ],
+                        );
+                      }).toList(),
                     ),
                     actions: [
                       OutlinedButton(
