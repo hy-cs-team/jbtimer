@@ -4,6 +4,7 @@ import 'package:jbtimer/extensions/list_dispose_extensions.dart';
 import 'package:jbtimer/history/history_page.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/record_area.dart';
+import 'package:jbtimer/main/session_button.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 class MainPage extends StatefulWidget {
@@ -39,61 +40,12 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            JBComponent(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _sessionController.value.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Select session'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children:
-                          _sessionControllers.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final sessionController = entry.value;
-                        return TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedSessionIndex = index;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            sessionController.value.name,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    actions: [
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: Text(
-                          'Create new session',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+            SessionButton(
+              sessionControllers: _sessionControllers,
+              selectedSessionIndex: _selectedSessionIndex,
+              onSelectedSessionIndexChanged: (index) => setState(() {
+                _selectedSessionIndex = index;
+              }),
             ),
             const SizedBox(height: 8.0),
             JBComponent(
