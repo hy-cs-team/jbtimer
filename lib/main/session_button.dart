@@ -4,15 +4,11 @@ import 'package:jbtimer/main/session_controller.dart';
 import 'package:jbtimer/main/session_list_dialog.dart';
 
 class SessionButton extends StatelessWidget {
-  final List<SessionController> sessionControllers;
-  final int selectedSessionIndex;
-  final void Function(int) onSelectedSessionIndexChanged;
+  final SessionController sessionController;
 
   const SessionButton({
     super.key,
-    required this.sessionControllers,
-    required this.selectedSessionIndex,
-    required this.onSelectedSessionIndexChanged,
+    required this.sessionController,
   });
 
   @override
@@ -21,7 +17,7 @@ class SessionButton extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          sessionControllers[selectedSessionIndex].value.name,
+          sessionController.value.name,
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
@@ -30,8 +26,8 @@ class SessionButton extends StatelessWidget {
           context: context,
           builder: (context) => SessionListDialog(
             context: context,
-            sessionControllers: sessionControllers,
-            onSelectedSessionIndexChanged: onSelectedSessionIndexChanged,
+            sessionControllers: [sessionController],
+            onSelectedSessionIndexChanged: (index) {},
           ),
         );
       },

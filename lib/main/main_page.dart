@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics.dart';
-import 'package:jbtimer/extensions/list_dispose_extensions.dart';
 import 'package:jbtimer/history/history_page.dart';
 import 'package:jbtimer/jb_component.dart';
 import 'package:jbtimer/main/record_area.dart';
@@ -15,20 +14,17 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late final List<SessionController> _sessionControllers;
-  int _selectedSessionIndex = 0;
-
-  get _sessionController => _sessionControllers[_selectedSessionIndex];
+  late final SessionController _sessionController;
 
   @override
   void initState() {
-    _sessionControllers = [SessionController()];
+    _sessionController = SessionController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _sessionControllers.dispose();
+    _sessionController.dispose();
     super.dispose();
   }
 
@@ -41,11 +37,7 @@ class _MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SessionButton(
-              sessionControllers: _sessionControllers,
-              selectedSessionIndex: _selectedSessionIndex,
-              onSelectedSessionIndexChanged: (index) => setState(() {
-                _selectedSessionIndex = index;
-              }),
+              sessionController: _sessionController,
             ),
             const SizedBox(height: 8.0),
             JBComponent(

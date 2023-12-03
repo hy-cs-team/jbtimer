@@ -1,7 +1,12 @@
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/record_list_stat.dart';
+import 'package:localstorage/localstorage.dart';
+
+final LocalStorage _sessionStorage = LocalStorage('sessions');
 
 class Session {
+  final String _id;
+
   final String name;
 
   final List<Record> _records;
@@ -38,26 +43,51 @@ class Session {
     });
   }
 
-  Session _safeExecute(void Function() job) {
-    _assertNotStale();
-
-    job.call();
-
-    _isStale = true;
-    return Session._copyFrom(this);
-  }
-
   Session({this.name = 'Default Session'})
-      : _records = [],
+      : _id = 'default',
+        _records = [],
         _stat = RecordListStat.analyze([], 0, 0),
         _best5 = null,
         _best12 = null,
         _avg5 = null,
         _avg12 = null;
 
+  Session.fromJson(Map<String, dynamic> json)
+      : _id = json['id'],
+        name = json['name'],
+        _records = (json['records'] as List<dynamic>)
+            .map((recordJson) => Record.fromJson(recordJson))
+            .toList() {
+    _recalculateStats();
+  }
+
+  static Future<Session?> load(String id) {
+    return _sessionStorage.ready
+        .then((ready) => _sessionStorage.getItem(id))
+        .then((json) => json == null ? null : Session.fromJson(json));
+  }
+
   Session._copyFrom(Session original)
-      : _records = original._records,
+      : _id = original._id,
+        _records = original._records,
         name = original.name {
+    _recalculateStats();
+  }
+
+  Map<String, dynamic> _toJson() {
+    return {
+      'id': _id,
+      'name': name,
+      'records': records.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  Future<void> _save() {
+    return _sessionStorage.ready
+        .then((ready) => _sessionStorage.setItem(_id, _toJson()));
+  }
+
+  void _recalculateStats() {
     _stat = RecordListStat.analyze(_records, 0, _records.length);
     _best5 = _getBestStat(5);
     _best12 = _getBestStat(12);
@@ -69,6 +99,17 @@ class Session {
     _assertNotStale();
 
     return value;
+  }
+
+  Session _safeExecute(void Function() job) {
+    _assertNotStale();
+
+    job.call();
+
+    _isStale = true;
+    Session newSession = Session._copyFrom(this);
+    newSession._save();
+    return newSession;
   }
 
   void _assertNotStale() {
