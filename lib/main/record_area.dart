@@ -14,13 +14,13 @@ enum _RecordState {
   Color get color {
     switch (this) {
       case _RecordState.idle:
-        return const Color(0xFF000000);
+        return Colors.transparent;
       case _RecordState.preview:
         return const Color(0xFF6D67E4);
       case _RecordState.running:
         return const Color(0xFF453C67);
       default:
-        return const Color(0xFF000000);
+        return Colors.transparent;
     }
   }
 }
@@ -136,13 +136,9 @@ class _RecordAreaState extends State<RecordArea> {
           child: StreamBuilder<int>(
             stream: _stopwatchStreamController.stream,
             builder: (context, snapshot) {
-              return Center(
-                child: Text(
-                  snapshot.data != null
-                      ? snapshot.data!.recordFormat.toString()
-                      : _previewTimeMilli.recordFormat,
-                  style: const TextStyle(fontSize: 24),
-                ),
+              return Text(
+                (snapshot.data ?? _previewTimeMilli).recordFormat,
+                style: const TextStyle(fontSize: 24),
               );
             },
           ),
