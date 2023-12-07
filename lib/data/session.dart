@@ -1,11 +1,9 @@
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/record_list_stat.dart';
-import 'package:localstorage/localstorage.dart';
-
-final LocalStorage _sessionStorage = LocalStorage('sessions');
+import 'package:jbtimer/storage/session_storage.dart';
 
 class Session {
-  final String _id;
+  final String id;
 
   final String name;
 
@@ -44,7 +42,7 @@ class Session {
   }
 
   Session({this.name = 'Default Session'})
-      : _id = 'default',
+      : id = 'default',
         _records = [],
         _stat = RecordListStat.analyze([], 0, 0),
         _best5 = null,
@@ -53,7 +51,7 @@ class Session {
         _avg12 = null;
 
   Session.fromJson(Map<String, dynamic> json)
-      : _id = json['id'],
+      : id = json['id'],
         name = json['name'],
         _records = (json['records'] as List<dynamic>)
             .map((recordJson) => Record.fromJson(recordJson))
@@ -61,30 +59,19 @@ class Session {
     _recalculateStats();
   }
 
-  static Future<Session?> load(String id) {
-    return _sessionStorage.ready
-        .then((ready) => _sessionStorage.getItem(id))
-        .then((json) => json == null ? null : Session.fromJson(json));
-  }
-
   Session._copyFrom(Session original)
-      : _id = original._id,
+      : id = original.id,
         _records = original._records,
         name = original.name {
     _recalculateStats();
   }
 
-  Map<String, dynamic> _toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      'id': _id,
+      'id': id,
       'name': name,
       'records': records.map((e) => e.toJson()).toList(),
     };
-  }
-
-  Future<void> _save() {
-    return _sessionStorage.ready
-        .then((ready) => _sessionStorage.setItem(_id, _toJson()));
   }
 
   void _recalculateStats() {
@@ -108,7 +95,7 @@ class Session {
 
     _isStale = true;
     Session newSession = Session._copyFrom(this);
-    newSession._save();
+    SessionStorage.save(newSession);
     return newSession;
   }
 
