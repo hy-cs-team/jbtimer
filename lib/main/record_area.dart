@@ -29,6 +29,7 @@ const _previewTimeMilli = 15000;
 
 class RecordArea extends StatefulWidget {
   final SessionController sessionController;
+
   const RecordArea({super.key, required this.sessionController});
 
   @override
@@ -128,11 +129,13 @@ class _RecordAreaState extends State<RecordArea> {
     return JBComponent(
       downColor: _recordState.color,
       onPressed: onRecordAreaTapped,
-      child: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-          ),
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+        ),
+        child: Center(
           child: StreamBuilder<int>(
             stream: _stopwatchStreamController.stream,
             builder: (context, snapshot) {
