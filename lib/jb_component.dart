@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class JBComponent extends StatefulWidget {
   final Widget child;
@@ -7,6 +8,7 @@ class JBComponent extends StatefulWidget {
   final void Function()? onTap;
   final void Function()? onTapDown;
   final void Function()? onTapUp;
+  final bool interactWithSpace;
 
   final bool hasInteraction;
 
@@ -18,6 +20,7 @@ class JBComponent extends StatefulWidget {
     this.onTap,
     this.onTapDown,
     this.onTapUp,
+    this.interactWithSpace = false,
   }) : hasInteraction = onTap != null || onTapDown != null || onTapUp != null;
 
   @override
@@ -26,6 +29,7 @@ class JBComponent extends StatefulWidget {
 
 class _JBComponentState extends State<JBComponent> {
   _State _state = _State.idle;
+  final FocusNode _focusNode = FocusNode();
 
   Color get color {
     switch (_state) {
@@ -35,6 +39,18 @@ class _JBComponentState extends State<JBComponent> {
       case _State.tapDown:
         return widget.downColor ?? Colors.transparent;
     }
+  }
+
+  @override
+  void initState() {
+    _focusNode.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,29 +64,58 @@ class _JBComponentState extends State<JBComponent> {
       return content;
     }
 
-    return GestureDetector(
-      onTapDown: (details) {
-        setState(() {
-          _state = _State.tapDown;
-          widget.onTapDown?.call();
-        });
-      },
-      onTapUp: (details) {
-        widget.onTapUp?.call();
-      },
-      onTapCancel: () {
-        setState(() {
-          _state = _State.idle;
-        });
-      },
-      onTap: () {
-        setState(() {
-          _state = _State.tap;
-        });
-        widget.onTap?.call();
-      },
+    final component = GestureDetector(
+      onTapDown: (details) => _down(),
+      onTapUp: (details) => _up(),
+      onTapCancel: () => _cancel(),
+      onTap: () => _tap(),
       child: content,
     );
+
+    if (!widget.interactWithSpace) {
+      return component;
+    }
+
+    return RawKeyboardListener(
+      focusNode: _focusNode,
+      onKey: (event) {
+        if (event.logicalKey != LogicalKeyboardKey.space) {
+          return;
+        }
+
+        if (event is RawKeyDownEvent) {
+          _down();
+        } else if (event is RawKeyUpEvent) {
+          _up();
+          _tap();
+        }
+      },
+      child: component,
+    );
+  }
+
+  _down() {
+    setState(() {
+      _state = _State.tapDown;
+    });
+    widget.onTapDown?.call();
+  }
+
+  _up() {
+    widget.onTapUp?.call();
+  }
+
+  _cancel() {
+    setState(() {
+      _state = _State.idle;
+    });
+  }
+
+  _tap() {
+    setState(() {
+      _state = _State.tap;
+    });
+    widget.onTap?.call();
   }
 }
 

@@ -119,6 +119,7 @@ class _RecordAreaState extends State<RecordArea> {
   @override
   Widget build(BuildContext context) {
     return JBComponent(
+      interactWithSpace: true,
       downColor: _recordState.downColor,
       backgroundColor: _recordState.backgroundColor,
       onTapDown: () {
