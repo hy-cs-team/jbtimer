@@ -1,14 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/extensions/format_extensions.dart';
 import 'package:jbtimer/jb_component.dart';
+import 'package:jbtimer/main/record_controller.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 enum _RecordState {
   idle,
   preview,
+  penalty,
   running;
 
   Color get color {
@@ -17,6 +17,8 @@ enum _RecordState {
         return Colors.transparent;
       case _RecordState.preview:
         return const Color(0xFF6D67E4);
+      case _RecordState.penalty:
+        return Colors.red;
       case _RecordState.running:
         return const Color(0xFF453C67);
       default:
@@ -37,113 +39,96 @@ class RecordArea extends StatefulWidget {
 }
 
 class _RecordAreaState extends State<RecordArea> {
+  final _recordController = RecordController();
+
   _RecordState _recordState = _RecordState.idle;
-  int _previewTime = 0;
-  final Stopwatch _stopwatch = Stopwatch();
-  late Timer _timer;
-  final _stopwatchStreamController = StreamController<int>();
+  int _penaltyMs = 0;
 
   @override
   void dispose() {
-    _timer.cancel();
-    _stopwatchStreamController.close();
+    _recordController.dispose();
     super.dispose();
   }
 
-  void startPreview() {
+  void _startPreview() {
     setState(() {
       _recordState = _RecordState.preview;
     });
-    _stopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
-      final leftPreviewTime = Duration(
-        milliseconds: _stopwatch.elapsed.inMilliseconds < _previewTimeMilli
-            ? _previewTimeMilli - _stopwatch.elapsed.inMilliseconds
-            : _stopwatch.elapsed.inMilliseconds - _previewTimeMilli,
-      );
-      _stopwatchStreamController.sink.add(leftPreviewTime.inMilliseconds);
+
+    _recordController.startReverse(_previewTimeMilli, () {
+      _startPenalty();
     });
   }
 
-  void startRecord() {
-    _stopwatch.stop();
-    _timer.cancel();
+  void _startPenalty() {
     setState(() {
-      _previewTime = _stopwatch.elapsed.inMilliseconds > _previewTimeMilli
-          ? _stopwatch.elapsed.inMilliseconds - _previewTimeMilli
-          : 0;
+      _recordState = _RecordState.penalty;
+    });
+
+    _recordController.start(onValueChanged: (penaltyMs) {
+      _penaltyMs = penaltyMs;
+    });
+  }
+
+  void _startRecord() {
+    setState(() {
       _recordState = _RecordState.running;
     });
-    _stopwatch.reset();
-    _stopwatch.start();
-    _timer = Timer.periodic(const Duration(milliseconds: 1), (_) {
-      _stopwatchStreamController.sink.add(_stopwatch.elapsed.inMilliseconds);
-    });
+
+    _recordController.start();
   }
 
-  void stopRecord() {
-    _stopwatch.stop();
-    _timer.cancel();
-
-    final recordedTime = _previewTime + _stopwatch.elapsed.inMilliseconds;
+  void _stopRecord() {
+    _recordController.stop();
 
     widget.sessionController.add(Record(
       dateTime: DateTime.now(),
-      recordMs: recordedTime,
+      recordMs: _recordController.value + _penaltyMs,
     ));
 
-    _stopwatchStreamController.sink.add(recordedTime);
-    reset();
+    _reset();
   }
 
-  void reset() {
-    _stopwatch.reset();
+  void _reset() {
     setState(() {
       _recordState = _RecordState.idle;
+      _penaltyMs = 0;
     });
   }
 
-  void onRecordAreaTapped() {
+  void _onRecordAreaTapped() {
     switch (_recordState) {
       case _RecordState.idle:
-        startPreview();
+        _startPreview();
         break;
       case _RecordState.preview:
-        startRecord();
+      case _RecordState.penalty:
+        _startRecord();
         break;
       case _RecordState.running:
-        stopRecord();
-        break;
-      default:
-        stopRecord();
+        _stopRecord();
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isOverPreviewTime = _recordState == _RecordState.preview &&
-        _stopwatch.elapsed.inMilliseconds > _previewTimeMilli;
-    final backgroundColor =
-        isOverPreviewTime ? Colors.red.shade900 : _recordState.color;
     return JBComponent(
       downColor: _recordState.color,
-      onPressed: onRecordAreaTapped,
+      onPressed: _onRecordAreaTapped,
       child: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: _recordState.color,
         ),
         child: Center(
-          child: StreamBuilder<int>(
-            stream: _stopwatchStreamController.stream,
-            builder: (context, snapshot) {
-              return Text(
-                (snapshot.data ?? _previewTimeMilli).recordFormat,
-                style: const TextStyle(fontSize: 24),
-              );
-            },
+          child: ValueListenableBuilder(
+            valueListenable: _recordController,
+            builder: (context, milli, child) => Text(
+              milli.recordFormat,
+              style: const TextStyle(fontSize: 24),
+            ),
           ),
         ),
       ),
