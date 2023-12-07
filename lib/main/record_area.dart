@@ -14,13 +14,13 @@ enum _RecordState {
   Color get color {
     switch (this) {
       case _RecordState.idle:
-        return const Color(0xFF000000);
+        return Colors.transparent;
       case _RecordState.preview:
         return const Color(0xFF6D67E4);
       case _RecordState.running:
         return const Color(0xFF453C67);
       default:
-        return const Color(0xFF000000);
+        return Colors.transparent;
     }
   }
 }
@@ -83,10 +83,15 @@ class _RecordAreaState extends State<RecordArea> {
   void stopRecord() {
     _stopwatch.stop();
     _timer.cancel();
+
+    final recordedTime = _previewTime + _stopwatch.elapsed.inMilliseconds;
+
     widget.sessionController.add(Record(
       dateTime: DateTime.now(),
-      recordMs: _previewTime + _stopwatch.elapsed.inMilliseconds,
+      recordMs: recordedTime,
     ));
+
+    _stopwatchStreamController.sink.add(recordedTime);
     reset();
   }
 
@@ -116,30 +121,28 @@ class _RecordAreaState extends State<RecordArea> {
 
   @override
   Widget build(BuildContext context) {
+    final isOverPreviewTime = _recordState == _RecordState.preview &&
+        _stopwatch.elapsed.inMilliseconds > _previewTimeMilli;
+    final backgroundColor =
+        isOverPreviewTime ? Colors.red.shade900 : _recordState.color;
     return JBComponent(
       downColor: _recordState.color,
       onPressed: onRecordAreaTapped,
-      child: StreamBuilder<int>(
-        stream: _stopwatchStreamController.stream,
-        builder: (context, snapshot) {
-          final isOverPreviewTime = _recordState == _RecordState.preview &&
-              _stopwatch.elapsed.inMilliseconds > _previewTimeMilli;
-          final backgroundColor =
-              isOverPreviewTime ? Colors.red.shade900 : _recordState.color;
-          return Container(
-            decoration: BoxDecoration(
-              color: backgroundColor,
-            ),
-            child: Center(
-              child: Text(
-                snapshot.data != null
-                    ? snapshot.data!.recordFormat.toString()
-                    : _previewTimeMilli.recordFormat,
+      child: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: backgroundColor,
+          ),
+          child: StreamBuilder<int>(
+            stream: _stopwatchStreamController.stream,
+            builder: (context, snapshot) {
+              return Text(
+                (snapshot.data ?? _previewTimeMilli).recordFormat,
                 style: const TextStyle(fontSize: 24),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
