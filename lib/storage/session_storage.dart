@@ -13,7 +13,7 @@ class SessionStorage {
     return Session.fromJson(json);
   }
 
-  static Future<void> save(Session session) async {
+  static Future<void> save(Session session) {
     return _sessionStorage.ready
         .then((ready) => _sessionStorage.setItem(session.id, session.toJson()));
   }

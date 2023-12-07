@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/main/session_controller.dart';
+import 'package:jbtimer/main/session_list.dart';
 
 class SessionListDialog extends AlertDialog {
   SessionListDialog({
@@ -9,24 +10,7 @@ class SessionListDialog extends AlertDialog {
     required void Function(int) onSelectedSessionIndexChanged,
   }) : super(
           title: const Text('Select session'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: sessionControllers.asMap().entries.map((entry) {
-              final index = entry.key;
-              final sessionController = entry.value;
-              return TextButton(
-                onPressed: () {
-                  onSelectedSessionIndexChanged(index);
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  sessionController.value.name,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              );
-            }).toList(),
-          ),
+          content: const SessionList(),
           actions: [
             OutlinedButton(
               onPressed: () {
