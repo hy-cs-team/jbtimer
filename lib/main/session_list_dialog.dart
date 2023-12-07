@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jbtimer/main/session_controller.dart';
+import 'package:jbtimer/data/session.dart';
 import 'package:jbtimer/main/session_list.dart';
 
 class SessionListDialog extends AlertDialog {
   SessionListDialog({
     super.key,
     required BuildContext context,
-    required List<SessionController> sessionControllers,
-    required void Function(int) onSelectedSessionIndexChanged,
+    required void Function(Session) onSessionSelected,
   }) : super(
           title: const Text('Select session'),
-          content: const SessionList(),
+          content: SessionList(onSessionSelected: onSessionSelected),
           actions: [
             OutlinedButton(
               onPressed: () {

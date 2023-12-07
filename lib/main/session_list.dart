@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:jbtimer/data/session.dart';
 import 'package:jbtimer/storage/session_list_storage.dart';
+import 'package:jbtimer/storage/session_storage.dart';
 
 class SessionList extends StatefulWidget {
-  const SessionList({super.key});
+  final void Function(Session) onSessionSelected;
+
+  const SessionList({super.key, required this.onSessionSelected});
 
   @override
   State<SessionList> createState() => _SessionListState();
@@ -37,6 +41,7 @@ class _SessionListState extends State<SessionList> {
           children: snapshot.requireData.map((sessionIdentifier) {
             return TextButton(
               onPressed: () {
+                _onSessionIdentifierSelected(sessionIdentifier);
                 Navigator.of(context).pop();
               },
               child: Text(
@@ -48,5 +53,14 @@ class _SessionListState extends State<SessionList> {
         );
       },
     );
+  }
+
+  _onSessionIdentifierSelected(SessionIdentifier sessionIdentifier) async {
+    Session? session = await SessionStorage.load(sessionIdentifier.id);
+    if (session == null) {
+      throw Exception('No such session with id: ${sessionIdentifier.id}');
+    }
+
+    widget.onSessionSelected(session);
   }
 }
