@@ -16,9 +16,12 @@ class SessionButton extends StatelessWidget {
     return JBComponent(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(
-          sessionController.value.name,
-          style: Theme.of(context).textTheme.titleLarge,
+        child: ValueListenableBuilder(
+          valueListenable: sessionController,
+          builder: (context, session, child) => Text(
+            session.name,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
       ),
       onPressed: () {
