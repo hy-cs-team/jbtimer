@@ -9,11 +9,12 @@ extension FormatExtensions on int {
 
     int m = total;
 
-    String fromSecond =
-        '${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
+    String second = s.toString();
+    String millisecond = ms.toString().padLeft(3, '0');
+
     if (m == 0) {
-      return fromSecond;
+      return '$second.$millisecond';
     }
-    return '$m:$fromSecond';
+    return '$m:${second.padLeft(2, '0')}.$millisecond';
   }
 }
