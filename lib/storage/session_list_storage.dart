@@ -29,8 +29,7 @@ class SessionListStorage {
   static Future<List<SessionIdentifier>> load() async {
     await _sessionListStorage.ready;
 
-    List<Map<String, dynamic>>? jsonList =
-        _sessionListStorage.getItem('identifiers');
+    List<dynamic>? jsonList = _sessionListStorage.getItem('identifiers');
     if (jsonList == null) {
       return [];
     }
@@ -43,8 +42,6 @@ class SessionListStorage {
     sessionIdentifiers.add(SessionIdentifier.fromSession(createdSession));
     List<Map<String, dynamic>> jsonList =
         sessionIdentifiers.map((identifier) => identifier.toJson()).toList();
-
-    await _sessionListStorage.ready;
 
     _sessionListStorage.setItem('identifiers', jsonList);
   }

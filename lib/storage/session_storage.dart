@@ -4,11 +4,12 @@ import 'package:localstorage/localstorage.dart';
 final LocalStorage _sessionStorage = LocalStorage('sessions');
 
 class SessionStorage {
-  static Future<Session> load(String id) async {
-    Map<String, dynamic>? json = await _sessionStorage.ready
-        .then((ready) => _sessionStorage.getItem(id));
+  static Future<Session?> load(String id) async {
+    await _sessionStorage.ready;
+
+    Map<String, dynamic>? json = _sessionStorage.getItem(id);
     if (json == null) {
-      throw Exception('No session with id: $id');
+      return null;
     }
     return Session.fromJson(json);
   }

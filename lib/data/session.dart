@@ -52,6 +52,7 @@ class Session {
         _best12 = null,
         _avg5 = null,
         _avg12 = null {
+    SessionStorage.save(this);
     SessionListStorage.onCreate(this);
   }
 
