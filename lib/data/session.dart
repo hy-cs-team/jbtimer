@@ -1,5 +1,6 @@
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/record_list_stat.dart';
+import 'package:jbtimer/storage/session_list_storage.dart';
 import 'package:jbtimer/storage/session_storage.dart';
 
 class Session {
@@ -50,7 +51,9 @@ class Session {
         _best5 = null,
         _best12 = null,
         _avg5 = null,
-        _avg12 = null;
+        _avg12 = null {
+    SessionListStorage.onCreate(this);
+  }
 
   Session.fromJson(Map<String, dynamic> json)
       : id = json['id'],
