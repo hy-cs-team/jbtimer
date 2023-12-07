@@ -5,7 +5,7 @@ import 'package:jbtimer/storage/session_storage.dart';
 
 class SessionController extends ValueNotifier<Session> {
   SessionController() : super(Session()) {
-    SessionStorage.load('default')
+    SessionStorage.load(Session.defaultId)
         .catchError((error) => value)
         .then((session) => value = session);
   }

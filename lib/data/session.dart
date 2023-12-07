@@ -3,6 +3,8 @@ import 'package:jbtimer/data/record_list_stat.dart';
 import 'package:jbtimer/storage/session_storage.dart';
 
 class Session {
+  static const defaultId = 'default';
+
   final String id;
 
   final String name;
@@ -42,7 +44,7 @@ class Session {
   }
 
   Session({this.name = 'Default Session'})
-      : id = 'default',
+      : id = defaultId,
         _records = [],
         _stat = RecordListStat.analyze([], 0, 0),
         _best5 = null,
