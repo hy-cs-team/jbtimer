@@ -21,7 +21,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    SessionStorage.load(Session.defaultId).then((session) {
+    SessionStorage.loadSelected().then((session) {
       _sessionController = SessionController(session ?? Session());
       setState(() {
         _isLoaded = true;

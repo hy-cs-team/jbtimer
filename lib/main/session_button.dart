@@ -30,7 +30,7 @@ class SessionButton extends StatelessWidget {
           builder: (context) => SessionListDialog(
             context: context,
             onSessionSelected: (session) {
-              sessionController.value = session;
+              sessionController.select(session);
             },
           ),
         );

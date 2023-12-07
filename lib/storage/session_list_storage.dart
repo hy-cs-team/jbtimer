@@ -45,4 +45,16 @@ class SessionListStorage {
 
     _sessionListStorage.setItem('identifiers', jsonList);
   }
+
+  static Future<void> onSelect(Session selectedSession) async {
+    await _sessionListStorage.ready;
+
+    _sessionListStorage.setItem('selected', selectedSession.id);
+  }
+
+  static Future<String?> getSelectedId() async {
+    await _sessionListStorage.ready;
+
+    return _sessionListStorage.getItem('selected');
+  }
 }
