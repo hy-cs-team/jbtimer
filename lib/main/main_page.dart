@@ -16,6 +16,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final ValueNotifier<bool> _isRecordRunningNotifier = ValueNotifier(false);
   late final SessionController _sessionController;
   bool _isLoaded = false;
 
@@ -45,28 +46,44 @@ class _MainPageState extends State<MainPage> {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SessionButton(
-                    sessionController: _sessionController,
-                  ),
-                  const SizedBox(height: 8.0),
-                  JBComponent(
-                    child: Statistics(
-                      sessionController: _sessionController,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => HistoryPage(
-                            sessionController: _sessionController,
+                  ValueListenableBuilder(
+                    valueListenable: _isRecordRunningNotifier,
+                    builder: (context, isRecordRunning, child) {
+                      return AnimatedSize(
+                        duration: const Duration(milliseconds: 70),
+                        child: SizedBox(
+                          height: isRecordRunning ? 0 : null,
+                          child: Column(
+                            children: [
+                              SessionButton(
+                                sessionController: _sessionController,
+                              ),
+                              const SizedBox(height: 8.0),
+                              JBComponent(
+                                child: Statistics(
+                                  sessionController: _sessionController,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => HistoryPage(
+                                        sessionController: _sessionController,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 8.0),
+                            ],
                           ),
                         ),
                       );
                     },
                   ),
-                  const SizedBox(height: 8.0),
                   Expanded(
                     child: RecordArea(
                       sessionController: _sessionController,
+                      isRecordRunningNotifier: _isRecordRunningNotifier,
                     ),
                   ),
                 ],

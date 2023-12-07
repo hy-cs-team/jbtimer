@@ -31,8 +31,13 @@ const _previewTimeMilli = 15000;
 
 class RecordArea extends StatefulWidget {
   final SessionController sessionController;
+  final ValueNotifier<bool> isRecordRunningNotifier;
 
-  const RecordArea({super.key, required this.sessionController});
+  const RecordArea({
+    super.key,
+    required this.sessionController,
+    required this.isRecordRunningNotifier,
+  });
 
   @override
   State<RecordArea> createState() => _RecordAreaState();
@@ -55,6 +60,7 @@ class _RecordAreaState extends State<RecordArea> {
       _recordState = _RecordState.preview;
     });
 
+    widget.isRecordRunningNotifier.value = true;
     _recordController.startReverse(_previewTimeMilli, () {
       _startPenalty();
     });
@@ -65,6 +71,7 @@ class _RecordAreaState extends State<RecordArea> {
       _recordState = _RecordState.penalty;
     });
 
+    widget.isRecordRunningNotifier.value = true;
     _recordController.start(onValueChanged: (penaltyMs) {
       _penaltyMs = penaltyMs;
     });
@@ -75,12 +82,14 @@ class _RecordAreaState extends State<RecordArea> {
       _recordState = _RecordState.running;
     });
 
+    widget.isRecordRunningNotifier.value = true;
     _recordController.start();
   }
 
   void _stopRecord() {
     _recordController.stop();
 
+    widget.isRecordRunningNotifier.value = false;
     widget.sessionController.add(Record(
       dateTime: DateTime.now(),
       recordMs: _recordController.value + _penaltyMs,
