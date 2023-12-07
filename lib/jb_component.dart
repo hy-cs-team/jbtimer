@@ -3,14 +3,22 @@ import 'package:flutter/material.dart';
 class JBComponent extends StatefulWidget {
   final Widget child;
   final Color? downColor;
-  final void Function()? onPressed;
+  final Color? backgroundColor;
+  final void Function()? onTap;
+  final void Function()? onTapDown;
+  final void Function()? onTapUp;
+
+  final bool hasInteraction;
 
   const JBComponent({
     super.key,
     required this.child,
     this.downColor,
-    this.onPressed,
-  });
+    this.backgroundColor,
+    this.onTap,
+    this.onTapDown,
+    this.onTapUp,
+  }) : hasInteraction = onTap != null || onTapDown != null || onTapUp != null;
 
   @override
   State<JBComponent> createState() => _JBComponentState();
@@ -19,16 +27,24 @@ class JBComponent extends StatefulWidget {
 class _JBComponentState extends State<JBComponent> {
   _State _state = _State.idle;
 
+  Color get color {
+    switch (_state) {
+      case _State.idle:
+      case _State.tap:
+        return widget.backgroundColor ?? Colors.transparent;
+      case _State.tapDown:
+        return widget.downColor ?? Colors.transparent;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content = _Content(
-      color: _state == _State.tapDown
-          ? widget.downColor ?? Theme.of(context).colorScheme.surfaceTint
-          : Colors.transparent,
+      color: color,
       child: widget.child,
     );
 
-    if (widget.onPressed == null) {
+    if (!widget.hasInteraction) {
       return content;
     }
 
@@ -36,7 +52,11 @@ class _JBComponentState extends State<JBComponent> {
       onTapDown: (details) {
         setState(() {
           _state = _State.tapDown;
+          widget.onTapDown?.call();
         });
+      },
+      onTapUp: (details) {
+        widget.onTapUp?.call();
       },
       onTapCancel: () {
         setState(() {
@@ -47,7 +67,7 @@ class _JBComponentState extends State<JBComponent> {
         setState(() {
           _state = _State.tap;
         });
-        widget.onPressed?.call();
+        widget.onTap?.call();
       },
       child: content,
     );

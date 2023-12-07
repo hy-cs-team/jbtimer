@@ -24,7 +24,7 @@ class SessionButton extends StatelessWidget {
           ),
         ),
       ),
-      onPressed: () {
+      onTap: () {
         showDialog(
           context: context,
           builder: (context) => SessionListDialog(

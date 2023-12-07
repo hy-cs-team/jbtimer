@@ -9,19 +9,34 @@ enum _RecordState {
   idle,
   preview,
   penalty,
-  running;
+  running,
+  done;
 
-  Color get color {
+  Color get backgroundColor {
     switch (this) {
       case _RecordState.idle:
+      case _RecordState.done:
         return Colors.transparent;
       case _RecordState.preview:
-        return const Color(0xFF6D67E4);
+        return Colors.green;
       case _RecordState.penalty:
         return Colors.red;
       case _RecordState.running:
-        return const Color(0xFF453C67);
-      default:
+        return Colors.blue;
+    }
+  }
+
+  Color get downColor {
+    switch (this) {
+      case _RecordState.idle:
+        return Colors.grey;
+      case _RecordState.preview:
+        return Colors.greenAccent;
+      case _RecordState.penalty:
+        return Colors.redAccent;
+      case _RecordState.running:
+        return Colors.blueAccent;
+      case _RecordState.done:
         return Colors.transparent;
     }
   }
@@ -95,49 +110,47 @@ class _RecordAreaState extends State<RecordArea> {
       recordMs: _recordController.value + _penaltyMs,
     ));
 
-    _reset();
-  }
-
-  void _reset() {
     setState(() {
-      _recordState = _RecordState.idle;
+      _recordState = _RecordState.done;
       _penaltyMs = 0;
     });
-  }
-
-  void _onRecordAreaTapped() {
-    switch (_recordState) {
-      case _RecordState.idle:
-        _startPreview();
-        break;
-      case _RecordState.preview:
-      case _RecordState.penalty:
-        _startRecord();
-        break;
-      case _RecordState.running:
-        _stopRecord();
-        break;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return JBComponent(
-      downColor: _recordState.color,
-      onPressed: _onRecordAreaTapped,
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: _recordState.color,
-        ),
-        child: Center(
-          child: ValueListenableBuilder(
-            valueListenable: _recordController,
-            builder: (context, milli, child) => Text(
-              milli.recordFormat,
-              style: const TextStyle(fontSize: 24),
-            ),
+      downColor: _recordState.downColor,
+      backgroundColor: _recordState.backgroundColor,
+      onTapDown: () {
+        if (_recordState == _RecordState.running) {
+          _stopRecord();
+        }
+      },
+      onTapUp: () {
+        switch (_recordState) {
+          case _RecordState.idle:
+            _startPreview();
+            break;
+          case _RecordState.preview:
+          case _RecordState.penalty:
+            _startRecord();
+            break;
+          case _RecordState.running:
+            // no-op
+            break;
+          case _RecordState.done:
+            setState(() {
+              _recordState = _RecordState.idle;
+            });
+            break;
+        }
+      },
+      child: Center(
+        child: ValueListenableBuilder(
+          valueListenable: _recordController,
+          builder: (context, milli, child) => Text(
+            milli.recordFormat,
+            style: const TextStyle(fontSize: 24),
           ),
         ),
       ),

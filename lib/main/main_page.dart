@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
                                 child: Statistics(
                                   sessionController: _sessionController,
                                 ),
-                                onPressed: () {
+                                onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => HistoryPage(
