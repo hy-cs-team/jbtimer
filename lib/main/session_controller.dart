@@ -4,7 +4,9 @@ import 'package:jbtimer/data/session.dart';
 import 'package:jbtimer/storage/session_list_storage.dart';
 
 class SessionController extends ValueNotifier<Session> {
-  SessionController(Session session) : super(session);
+  SessionController(Session session) : super(session) {
+    select(session);
+  }
 
   void select(Session session) {
     SessionListStorage.onSelect(session);

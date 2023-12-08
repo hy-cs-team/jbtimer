@@ -7,7 +7,7 @@ final LocalStorage _sessionStorage = LocalStorage('sessions');
 class SessionStorage {
   static Future<Session?> loadSelected() async {
     String? id = await SessionListStorage.getSelectedId();
-    if (id == null) return null;
+    if (id == null) return load(Session.defaultId);
 
     return await load(id);
   }
