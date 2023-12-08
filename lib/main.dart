@@ -4,7 +4,9 @@ import 'package:wakelock/wakelock.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Wakelock.enable();
+  Future.delayed(const Duration(seconds: 1), () {
+    Wakelock.enable();
+  });
   runApp(const MyApp());
 }
 
