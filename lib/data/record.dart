@@ -8,7 +8,7 @@ class Record {
   });
 
   Record.fromJson(Map<String, dynamic> json)
-      : dateTime = DateTime.fromMicrosecondsSinceEpoch(json['dateTime']),
+      : dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
         recordMs = json['recordMs'];
 
   Map<String, dynamic> toJson() {
