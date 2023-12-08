@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/main/main_page.dart';
+import 'package:wakelock/wakelock.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Wakelock.enable();
   runApp(const MyApp());
 }
 
