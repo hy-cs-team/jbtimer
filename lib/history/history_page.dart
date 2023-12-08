@@ -3,6 +3,13 @@ import 'package:jbtimer/components/statistics.dart';
 import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
+enum _SessionActionItem {
+  edit,
+  graph,
+  saveAsText,
+  saveAsImage,
+}
+
 class HistoryPage extends StatelessWidget {
   final SessionController sessionController;
 
@@ -20,6 +27,30 @@ class HistoryPage extends StatelessWidget {
           builder: (context, session, child) => Text(session.name),
         ),
         centerTitle: true,
+        actions: [
+          PopupMenuButton<_SessionActionItem>(
+            onSelected: (_SessionActionItem item) {},
+            itemBuilder: (BuildContext context) =>
+                <PopupMenuEntry<_SessionActionItem>>[
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.edit,
+                child: Text('Edit session'),
+              ),
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.graph,
+                child: Text('See graph'),
+              ),
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.saveAsText,
+                child: Text('Save as text'),
+              ),
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.saveAsImage,
+                child: Text('Save as image'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [
