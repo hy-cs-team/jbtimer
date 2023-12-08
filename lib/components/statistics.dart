@@ -20,8 +20,8 @@ class Statistics extends StatelessWidget {
       builder: (context, session, child) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: GridView(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: _getColumnCount(context),
             crossAxisSpacing: 18.0,
             mainAxisExtent: 20.0,
           ),
@@ -74,5 +74,14 @@ class Statistics extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int _getColumnCount(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    if (width >= 600) {
+      return 4;
+    }
+    return 2;
   }
 }
