@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/data/session.dart';
+import 'package:jbtimer/main/session_controller.dart';
 
-class NewSessionPage extends StatefulWidget {
-  final void Function(Session session) onSessionCreated;
+class EditSessionPage extends StatefulWidget {
+  final void Function(Session session)? onSessionCreated;
+  final SessionController? sessionController;
 
-  const NewSessionPage({super.key, required this.onSessionCreated});
+  final bool isEdit;
+
+  const EditSessionPage({
+    super.key,
+    this.onSessionCreated,
+    this.sessionController,
+  }) : isEdit = sessionController != null;
 
   @override
-  State<NewSessionPage> createState() => _NewSessionPageState();
+  State<EditSessionPage> createState() => _EditSessionPageState();
 }
 
-class _NewSessionPageState extends State<NewSessionPage> {
+class _EditSessionPageState extends State<EditSessionPage> {
   final TextEditingController _nameController = TextEditingController();
 
   bool _isValid = false;
 
   @override
   void initState() {
+    _nameController.text = widget.sessionController?.value.name ?? '';
     _nameController.addListener(() {
       setState(() {
         _isValid = _isValidName();
@@ -29,7 +38,7 @@ class _NewSessionPageState extends State<NewSessionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Session'),
+        title: Text(widget.isEdit ? 'Edit Session' : 'New Session'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -74,8 +83,12 @@ class _NewSessionPageState extends State<NewSessionPage> {
   }
 
   _onSubmitButtonPressed() {
-    Session newSession = Session(name: _nameController.text);
-    widget.onSessionCreated(newSession);
+    if (widget.isEdit) {
+      widget.sessionController?.rename(_nameController.text);
+    } else {
+      Session newSession = Session(name: _nameController.text);
+      widget.onSessionCreated?.call(newSession);
+    }
     Navigator.of(context).pop();
   }
 }

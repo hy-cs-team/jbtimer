@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/data/session.dart';
+import 'package:jbtimer/edit_session/edit_session_page.dart';
 import 'package:jbtimer/main/session_list.dart';
-import 'package:jbtimer/new_session/new_session_page.dart';
 
 class SessionListDialog extends AlertDialog {
   SessionListDialog({
@@ -16,7 +16,7 @@ class SessionListDialog extends AlertDialog {
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => NewSessionPage(
+                    builder: (context) => EditSessionPage(
                       onSessionCreated: (session) => onSessionSelected(session),
                     ),
                   ),

@@ -20,4 +20,8 @@ class SessionController extends ValueNotifier<Session> {
   void delete(Record record) {
     value = value.delete(record);
   }
+
+  void rename(String newName) {
+    value = value.rename(newName);
+  }
 }

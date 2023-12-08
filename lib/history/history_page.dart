@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jbtimer/components/statistics.dart';
+import 'package:jbtimer/edit_session/edit_session_page.dart';
 import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
@@ -29,7 +30,22 @@ class HistoryPage extends StatelessWidget {
         centerTitle: true,
         actions: [
           PopupMenuButton<_SessionActionItem>(
-            onSelected: (_SessionActionItem item) {},
+            onSelected: (_SessionActionItem item) {
+              switch (item) {
+                case _SessionActionItem.edit:
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => EditSessionPage(
+                        sessionController: sessionController,
+                      ),
+                    ),
+                  );
+                  break;
+                case _SessionActionItem.graph:
+                case _SessionActionItem.saveAsText:
+                case _SessionActionItem.saveAsImage:
+              }
+            },
             itemBuilder: (BuildContext context) =>
                 <PopupMenuEntry<_SessionActionItem>>[
               const PopupMenuItem<_SessionActionItem>(

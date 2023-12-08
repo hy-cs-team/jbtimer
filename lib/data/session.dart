@@ -9,7 +9,9 @@ class Session {
 
   final String id;
 
-  final String name;
+  String _name;
+
+  String get name => _safe(_name);
 
   final List<Record> _records;
 
@@ -45,8 +47,15 @@ class Session {
     });
   }
 
-  Session({this.name = defaultName})
-      : id = name == defaultName
+  Session rename(String newName) {
+    return _safeExecute(() {
+      _name = newName;
+    });
+  }
+
+  Session({String name = defaultName})
+      : _name = name,
+        id = name == defaultName
             ? defaultId
             : 'session${DateTime.now().millisecondsSinceEpoch}',
         _records = [],
@@ -61,7 +70,7 @@ class Session {
 
   Session.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        name = json['name'],
+        _name = json['name'],
         _records = (json['records'] as List<dynamic>)
             .map((recordJson) => Record.fromJson(recordJson))
             .toList() {
@@ -71,7 +80,7 @@ class Session {
   Session._copyFrom(Session original)
       : id = original.id,
         _records = original._records,
-        name = original.name {
+        _name = original.name {
     _recalculateStats();
   }
 
@@ -102,15 +111,16 @@ class Session {
 
     job.call();
 
-    _isStale = true;
     Session newSession = Session._copyFrom(this);
     SessionStorage.save(newSession);
+
+    _isStale = true;
     return newSession;
   }
 
   void _assertNotStale() {
     if (_isStale) {
-      throw StateError('Cannot call add() from a stale Session.');
+      throw StateError('Cannot call methods from a stale Session.');
     }
   }
 
