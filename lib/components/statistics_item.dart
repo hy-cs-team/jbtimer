@@ -4,13 +4,15 @@ import 'package:jbtimer/extensions/format_extensions.dart';
 class StatisticsItem extends StatelessWidget {
   final String name;
   final int? record;
+  final String? text;
   final double? standardDeviation;
   final Color? recordColor;
 
   const StatisticsItem({
     super.key,
     required this.name,
-    required this.record,
+    this.record,
+    this.text,
     this.standardDeviation,
     this.recordColor,
   });
@@ -31,7 +33,7 @@ class StatisticsItem extends StatelessWidget {
           text: TextSpan(
             children: [
               TextSpan(
-                text: record?.recordFormat ?? 'N/A',
+                text: record?.recordFormat ?? text ?? 'N/A',
                 style: TextStyle(
                   color: recordColor ?? Theme.of(context).colorScheme.onSurface,
                 ),
