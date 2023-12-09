@@ -91,6 +91,7 @@ class _HistoryPageState extends State<HistoryPage> {
           Expanded(
             child: PageView(
               controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 HistoryList(sessionController: widget.sessionController),
                 const Center(child: Text('Graph')),
