@@ -31,14 +31,14 @@ class _HighlightedStatisticsItemState extends State<HighlightedStatisticsItem>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
     );
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       _colorAnimation = ColorTween(
         begin: widget.recordHighlightColor,
         end: Theme.of(context).colorScheme.onSurface,
-      ).animate(_controller)
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInExpo))
         ..addListener(() => setState(() {}));
       _controller.forward();
     });
