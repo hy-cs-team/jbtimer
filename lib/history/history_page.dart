@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jbtimer/components/jb_button.dart';
 import 'package:jbtimer/components/statistics.dart';
 import 'package:jbtimer/edit_session/edit_session_page.dart';
+import 'package:jbtimer/history/history_graph.dart';
 import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
@@ -94,7 +95,7 @@ class _HistoryPageState extends State<HistoryPage> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 HistoryList(sessionController: widget.sessionController),
-                const Center(child: Text('Graph')),
+                HistoryGraph(sessionController: widget.sessionController),
               ],
             ),
           ),
