@@ -6,14 +6,14 @@ import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 enum _SessionActionItem {
-  graph,
+  view,
   saveAsText,
   saveAsImage,
   edit,
   delete,
 }
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   final SessionController sessionController;
 
   const HistoryPage({
@@ -22,11 +22,24 @@ class HistoryPage extends StatelessWidget {
   });
 
   @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  final PageController _pageController = PageController();
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: ValueListenableBuilder(
-          valueListenable: sessionController,
+          valueListenable: widget.sessionController,
           builder: (context, session, child) => Text(session.name),
         ),
         centerTitle: true,
@@ -36,9 +49,10 @@ class HistoryPage extends StatelessWidget {
                 _onPopupMenuSelected(context, item),
             itemBuilder: (BuildContext context) =>
                 <PopupMenuEntry<_SessionActionItem>>[
-              const PopupMenuItem<_SessionActionItem>(
-                value: _SessionActionItem.graph,
-                child: Text('View graph'),
+              PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.view,
+                child: Text(
+                    'View ${_pageController.page == 0 ? 'graph' : 'records'}'),
               ),
               const PopupMenuItem<_SessionActionItem>(
                 value: _SessionActionItem.saveAsText,
@@ -64,7 +78,7 @@ class HistoryPage extends StatelessWidget {
       body: Column(
         children: [
           Statistics(
-            sessionController: sessionController,
+            sessionController: widget.sessionController,
             showTotalCount: false,
           ),
           const Divider(
@@ -74,7 +88,15 @@ class HistoryPage extends StatelessWidget {
             endIndent: 12.0,
             color: Color(0xff808080),
           ),
-          Expanded(child: HistoryList(sessionController: sessionController)),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              children: [
+                HistoryList(sessionController: widget.sessionController),
+                const Center(child: Text('Graph')),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -82,7 +104,21 @@ class HistoryPage extends StatelessWidget {
 
   _onPopupMenuSelected(BuildContext context, _SessionActionItem item) {
     switch (item) {
-      case _SessionActionItem.graph:
+      case _SessionActionItem.view:
+        if (_pageController.page == 0) {
+          _pageController.animateToPage(
+            1,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCirc,
+          );
+        } else if (_pageController.page == 1) {
+          _pageController.animateToPage(
+            0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCirc,
+          );
+        }
+        break;
       case _SessionActionItem.saveAsText:
       case _SessionActionItem.saveAsImage:
         break;
@@ -90,7 +126,7 @@ class HistoryPage extends StatelessWidget {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => EditSessionPage(
-              sessionController: sessionController,
+              sessionController: widget.sessionController,
             ),
           ),
         );
@@ -100,11 +136,11 @@ class HistoryPage extends StatelessWidget {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Delete this session?'),
-            content: Text(sessionController.value.name),
+            content: Text(widget.sessionController.value.name),
             actions: [
               JBButton(
                 onPressed: () async {
-                  await sessionController.deleteSession();
+                  await widget.sessionController.deleteSession();
 
                   if (!context.mounted) return;
                   Navigator.popUntil(context, (route) => route.isFirst);
