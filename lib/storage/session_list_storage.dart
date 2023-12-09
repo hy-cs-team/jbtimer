@@ -91,4 +91,15 @@ class SessionListStorage {
 
     return sessionIdentifiers[0];
   }
+
+  static Future<void> update(Session session) async {
+    List<SessionIdentifier> sessionIdentifiers = await load();
+    int index =
+        sessionIdentifiers.indexWhere((element) => element.id == session.id);
+    sessionIdentifiers[index] = SessionIdentifier.fromSession(session);
+    List<Map<String, dynamic>> jsonList =
+        sessionIdentifiers.map((identifier) => identifier.toJson()).toList();
+
+    _sessionListStorage.setItem('identifiers', jsonList);
+  }
 }

@@ -113,6 +113,7 @@ class Session {
 
     Session newSession = Session._copyFrom(this);
     SessionStorage.save(newSession);
+    SessionListStorage.update(newSession);
 
     _isStale = true;
     return newSession;
