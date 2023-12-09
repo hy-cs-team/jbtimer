@@ -38,7 +38,7 @@ class HistoryPage extends StatelessWidget {
                 <PopupMenuEntry<_SessionActionItem>>[
               const PopupMenuItem<_SessionActionItem>(
                 value: _SessionActionItem.graph,
-                child: Text('See graph'),
+                child: Text('View graph'),
               ),
               const PopupMenuItem<_SessionActionItem>(
                 value: _SessionActionItem.saveAsText,
