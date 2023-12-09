@@ -84,7 +84,7 @@ class _EditSessionPageState extends State<EditSessionPage> {
 
   _onSubmitButtonPressed() {
     if (widget.isEdit) {
-      widget.sessionController?.rename(_nameController.text);
+      widget.sessionController?.renameSession(_nameController.text);
     } else {
       Session newSession = Session(name: _nameController.text);
       widget.onSessionCreated?.call(newSession);

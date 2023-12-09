@@ -26,4 +26,10 @@ class SessionStorage {
     return _sessionStorage.ready
         .then((ready) => _sessionStorage.setItem(session.id, session.toJson()));
   }
+
+  static Future<void> delete(Session session) async {
+    await _sessionStorage.ready;
+
+    _sessionStorage.deleteItem(session.id);
+  }
 }

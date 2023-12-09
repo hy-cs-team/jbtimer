@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jbtimer/components/jb_button.dart';
 import 'package:jbtimer/data/session.dart';
 import 'package:jbtimer/edit_session/edit_session_page.dart';
 import 'package:jbtimer/main/session_list.dart';
@@ -12,7 +13,13 @@ class SessionListDialog extends AlertDialog {
           title: const Text('Select session'),
           content: SessionList(onSessionSelected: onSessionSelected),
           actions: [
-            OutlinedButton(
+            JBButton(
+              child: Text(
+                'Create new session',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -22,17 +29,6 @@ class SessionListDialog extends AlertDialog {
                   ),
                 );
               },
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                'Create new session',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
             ),
           ],
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jbtimer/components/jb_button.dart';
 import 'package:jbtimer/components/statistics.dart';
 import 'package:jbtimer/edit_session/edit_session_page.dart';
 import 'package:jbtimer/history/history_list.dart';
@@ -31,25 +32,8 @@ class HistoryPage extends StatelessWidget {
         centerTitle: true,
         actions: [
           PopupMenuButton<_SessionActionItem>(
-            onSelected: (_SessionActionItem item) {
-              switch (item) {
-                case _SessionActionItem.graph:
-                case _SessionActionItem.saveAsText:
-                case _SessionActionItem.saveAsImage:
-                  break;
-                case _SessionActionItem.edit:
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => EditSessionPage(
-                        sessionController: sessionController,
-                      ),
-                    ),
-                  );
-                  break;
-                case _SessionActionItem.delete:
-                  break;
-              }
-            },
+            onSelected: (_SessionActionItem item) =>
+                _onPopupMenuSelected(context, item),
             itemBuilder: (BuildContext context) =>
                 <PopupMenuEntry<_SessionActionItem>>[
               const PopupMenuItem<_SessionActionItem>(
@@ -94,5 +78,48 @@ class HistoryPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _onPopupMenuSelected(BuildContext context, _SessionActionItem item) {
+    switch (item) {
+      case _SessionActionItem.graph:
+      case _SessionActionItem.saveAsText:
+      case _SessionActionItem.saveAsImage:
+        break;
+      case _SessionActionItem.edit:
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => EditSessionPage(
+              sessionController: sessionController,
+            ),
+          ),
+        );
+        break;
+      case _SessionActionItem.delete:
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete this session?'),
+            content: Text(sessionController.value.name),
+            actions: [
+              JBButton(
+                onPressed: () async {
+                  await sessionController.deleteSession();
+
+                  if (!context.mounted) return;
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+    }
   }
 }

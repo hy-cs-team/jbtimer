@@ -105,7 +105,7 @@ class _RecordAreaState extends State<RecordArea> {
     _recordController.stop();
 
     widget.isRecordRunningNotifier.value = false;
-    widget.sessionController.add(Record(
+    widget.sessionController.addRecord(Record(
       dateTime: DateTime.now(),
       recordMs: _recordController.value + _penaltyMs,
     ));

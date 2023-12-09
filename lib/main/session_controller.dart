@@ -2,26 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/session.dart';
 import 'package:jbtimer/storage/session_list_storage.dart';
+import 'package:jbtimer/storage/session_storage.dart';
 
 class SessionController extends ValueNotifier<Session> {
   SessionController(Session session) : super(session) {
-    select(session);
+    selectSession(session);
   }
 
-  void select(Session session) {
+  void selectSession(Session session) {
     SessionListStorage.onSelect(session);
     value = session;
   }
 
-  void add(Record record) {
+  void renameSession(String newName) {
+    value = value.rename(newName);
+  }
+
+  Future<void> deleteSession() async {
+    SessionStorage.delete(value);
+    final sessionIdentifier = await SessionListStorage.delete(value);
+    if (sessionIdentifier == null) {
+      value = Session();
+    } else {
+      value = await SessionStorage.load(sessionIdentifier.id) ?? Session();
+    }
+  }
+
+  void addRecord(Record record) {
     value = value.add(record);
   }
 
-  void delete(Record record) {
+  void deleteRecord(Record record) {
     value = value.delete(record);
-  }
-
-  void rename(String newName) {
-    value = value.rename(newName);
   }
 }

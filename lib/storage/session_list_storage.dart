@@ -23,6 +23,20 @@ class SessionIdentifier {
       'name': name,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is SessionIdentifier && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class SessionListStorage {
@@ -56,5 +70,25 @@ class SessionListStorage {
     await _sessionListStorage.ready;
 
     return _sessionListStorage.getItem('selected');
+  }
+
+  static Future<SessionIdentifier?> delete(Session session) async {
+    List<SessionIdentifier> sessionIdentifiers = await load();
+    sessionIdentifiers.remove(SessionIdentifier.fromSession(session));
+    List<Map<String, dynamic>> jsonList =
+        sessionIdentifiers.map((identifier) => identifier.toJson()).toList();
+
+    _sessionListStorage.setItem('identifiers', jsonList);
+
+    String? selectedId = await getSelectedId();
+    if (selectedId != session.id) {
+      return SessionIdentifier.fromSession(session);
+    }
+
+    if (sessionIdentifiers.isEmpty) {
+      return null;
+    }
+
+    return sessionIdentifiers[0];
   }
 }

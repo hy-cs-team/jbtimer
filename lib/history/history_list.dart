@@ -55,7 +55,7 @@ class HistoryList extends StatelessWidget {
                     actions: [
                       OutlinedButton(
                         onPressed: () {
-                          sessionController.delete(record);
+                          sessionController.deleteRecord(record);
                           Navigator.pop(context);
                         },
                         style: OutlinedButton.styleFrom(
