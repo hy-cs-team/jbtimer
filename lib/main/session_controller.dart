@@ -22,9 +22,10 @@ class SessionController extends ValueNotifier<Session> {
     SessionStorage.delete(value);
     final sessionIdentifier = await SessionListStorage.delete(value);
     if (sessionIdentifier == null) {
-      value = Session();
+      selectSession(Session());
     } else {
-      value = await SessionStorage.load(sessionIdentifier.id) ?? Session();
+      selectSession(
+          await SessionStorage.load(sessionIdentifier.id) ?? Session());
     }
   }
 
