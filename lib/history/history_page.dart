@@ -5,10 +5,11 @@ import 'package:jbtimer/history/history_list.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 enum _SessionActionItem {
-  edit,
   graph,
   saveAsText,
   saveAsImage,
+  edit,
+  delete,
 }
 
 class HistoryPage extends StatelessWidget {
@@ -32,6 +33,10 @@ class HistoryPage extends StatelessWidget {
           PopupMenuButton<_SessionActionItem>(
             onSelected: (_SessionActionItem item) {
               switch (item) {
+                case _SessionActionItem.graph:
+                case _SessionActionItem.saveAsText:
+                case _SessionActionItem.saveAsImage:
+                  break;
                 case _SessionActionItem.edit:
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
@@ -41,17 +46,12 @@ class HistoryPage extends StatelessWidget {
                     ),
                   );
                   break;
-                case _SessionActionItem.graph:
-                case _SessionActionItem.saveAsText:
-                case _SessionActionItem.saveAsImage:
+                case _SessionActionItem.delete:
+                  break;
               }
             },
             itemBuilder: (BuildContext context) =>
                 <PopupMenuEntry<_SessionActionItem>>[
-              const PopupMenuItem<_SessionActionItem>(
-                value: _SessionActionItem.edit,
-                child: Text('Edit session'),
-              ),
               const PopupMenuItem<_SessionActionItem>(
                 value: _SessionActionItem.graph,
                 child: Text('See graph'),
@@ -63,6 +63,15 @@ class HistoryPage extends StatelessWidget {
               const PopupMenuItem<_SessionActionItem>(
                 value: _SessionActionItem.saveAsImage,
                 child: Text('Save as image'),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.edit,
+                child: Text('Edit session'),
+              ),
+              const PopupMenuItem<_SessionActionItem>(
+                value: _SessionActionItem.delete,
+                child: Text('Delete session'),
               ),
             ],
           ),
