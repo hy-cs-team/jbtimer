@@ -125,7 +125,7 @@ class HistoryGraph extends StatelessWidget {
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
-          (value + 1).round().toString(),
+        (value + 1).round().toString(),
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 10.0,
