@@ -57,7 +57,7 @@ class TextSaveDialog extends AlertDialog {
     required BuildContext context,
     required Session session,
   }) : super(
-          content: Text(_buildText(session)),
+          content: SingleChildScrollView(child: Text(_buildText(session))),
           actions: [
             JBButton(
               onPressed: () async {
