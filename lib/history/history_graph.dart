@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/extensions/format_extensions.dart';
 import 'package:jbtimer/main/session_controller.dart';
@@ -23,17 +22,8 @@ class HistoryGraph extends StatelessWidget {
       return const Center(child: Text('No records'));
     }
 
-    final firstRecordAt = _records.first.dateTime.millisecondsSinceEpoch;
-    final lastRecordAt = _records.last.dateTime.millisecondsSinceEpoch;
-    final timeGap = lastRecordAt - firstRecordAt;
-    final timeWindowPadding = timeGap > 0 ? timeGap * 0.1 : 30000.0;
-    final timeWindowSize = timeGap + timeWindowPadding * 2;
-
-    final minX = firstRecordAt - timeWindowPadding;
-    final maxX = lastRecordAt + timeWindowPadding;
-
     final verticalSteps = MediaQuery.of(context).size.width / 50;
-    final verticalInterval = timeWindowSize / verticalSteps;
+    final verticalInterval = (_records.length / verticalSteps).ceilToDouble();
 
     final maxRecordMs = sessionController.value.stat.worst?.recordMs ?? 0;
     final maxY = maxRecordMs * 1.2;
@@ -73,13 +63,13 @@ class HistoryGraph extends StatelessWidget {
                 reservedSize: 30,
                 interval: verticalInterval * 3,
                 getTitlesWidget: (value, meta) =>
-                    bottomTitleWidgets(value, meta, minX, maxX),
+                    bottomTitleWidgets(value, meta, 0, _records.length - 1.0),
               ),
             ),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                interval: verticalInterval,
+                interval: horizontalInterval,
                 getTitlesWidget: leftTitleWidgets,
                 reservedSize: 50,
               ),
@@ -89,16 +79,19 @@ class HistoryGraph extends StatelessWidget {
             show: true,
             border: Border.all(color: const Color(0xff37434d)),
           ),
-          minX: minX,
-          maxX: maxX,
+          minX: 0,
+          maxX: _records.length - 1.0,
           minY: 0,
           maxY: maxY,
           lineBarsData: [
             LineChartBarData(
               spots: _records
-                  .map((record) => FlSpot(
-                      record.dateTime.millisecondsSinceEpoch as double,
-                      record.recordMs as double))
+                  .asMap()
+                  .entries
+                  .map((entry) => FlSpot(
+                        entry.key as double,
+                        entry.value.recordMs as double,
+                      ))
                   .toList(),
               gradient: LinearGradient(
                 colors: gradientColors,
@@ -125,15 +118,14 @@ class HistoryGraph extends StatelessWidget {
 
   Widget bottomTitleWidgets(
       double value, TitleMeta meta, double start, double end) {
-    if (value == start || value == end) {
-      return const SizedBox();
-    }
+    // if (value == start || value == end) {
+    //   return const SizedBox();
+    // }
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
-        DateFormat.jms()
-            .format(DateTime.fromMillisecondsSinceEpoch(value.round())),
+          (value + 1).round().toString(),
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 10.0,
