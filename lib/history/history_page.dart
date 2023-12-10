@@ -4,6 +4,7 @@ import 'package:jbtimer/components/statistics.dart';
 import 'package:jbtimer/edit_session/edit_session_page.dart';
 import 'package:jbtimer/history/history_graph.dart';
 import 'package:jbtimer/history/history_list.dart';
+import 'package:jbtimer/history/text_dialog.dart';
 import 'package:jbtimer/main/session_controller.dart';
 
 enum _SessionActionItem {
@@ -122,6 +123,11 @@ class _HistoryPageState extends State<HistoryPage> {
         }
         break;
       case _SessionActionItem.saveAsText:
+        showDialog(
+            context: context,
+            builder: (context) =>
+                TextSaveDialog(session: widget.sessionController.value));
+        break;
       case _SessionActionItem.saveAsImage:
         break;
       case _SessionActionItem.edit:
