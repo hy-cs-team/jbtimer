@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jbtimer/components/jb_button.dart';
 import 'package:jbtimer/data/record.dart';
 import 'package:jbtimer/data/session.dart';
@@ -53,11 +54,32 @@ String _buildText(Session session) {
 class TextSaveDialog extends AlertDialog {
   TextSaveDialog({
     super.key,
+    required BuildContext context,
     required Session session,
   }) : super(
           content: Text(_buildText(session)),
           actions: [
-            const JBButton(child: Text('Copy')),
+            JBButton(
+              onPressed: () async {
+                await Clipboard.setData(
+                    ClipboardData(text: _buildText(session)));
+
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Session text copied to clipboard.',
+                    ),
+                  ),
+                );
+              },
+              child: Text(
+                'Copy',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ),
             const JBButton(child: Text('Save')),
           ],
         );

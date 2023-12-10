@@ -124,9 +124,12 @@ class _HistoryPageState extends State<HistoryPage> {
         break;
       case _SessionActionItem.saveAsText:
         showDialog(
+          context: context,
+          builder: (context) => TextSaveDialog(
             context: context,
-            builder: (context) =>
-                TextSaveDialog(session: widget.sessionController.value));
+            session: widget.sessionController.value,
+          ),
+        );
         break;
       case _SessionActionItem.saveAsImage:
         break;
